@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2025 Ivan Parrado, Manuel Calero, Xtendoo SLU -->
+<!-- License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+
+    <record id="maintenance_equipment_view_form_partner" model="ir.ui.view">
+        <field name="name">maintenance.equipment.form.partner</field>
+        <field name="model">maintenance.equipment</field>
+        <field name="inherit_id" ref="maintenance.hr_equipment_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='category_id']" position="after">
+                <field name="partner_id" />
+                <field name="equipment_model" />
+                <field name="equipment_serial" />
+                <field name="year_manufacture" />
+                <field name="maintenance_price" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="maintenance_equipment_view_search_partner" model="ir.ui.view">
+        <field name="name">maintenance.equipment.search.partner</field>
+        <field name="model">maintenance.equipment</field>
+        <field name="inherit_id" ref="maintenance.hr_equipment_view_search" />
+        <field name="arch" type="xml">
+            <field name="category_id" position="after">
+                <field name="partner_id" />
+                <field name="equipment_model" />
+                <field name="equipment_serial" />
+                <field name="year_manufacture" />
+            </field>
+            <group position="inside">
+                <filter
+                    name="groupby_partner"
+                    string="Cliente"
+                    context="{'group_by': 'partner_id'}"
+                />
+            </group>
+        </field>
+    </record>
+
+    <record id="maintenance_equipment_view_tree_partner" model="ir.ui.view">
+        <field name="name">maintenance.equipment.tree.partner</field>
+        <field name="model">maintenance.equipment</field>
+        <field name="inherit_id" ref="maintenance.hr_equipment_view_tree" />
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="partner_id" optional="show" />
+                <field name="equipment_model" optional="show" />
+                <field name="equipment_serial" optional="show" />
+                <field name="year_manufacture" optional="hide" />
+                <field name="maintenance_price" optional="hide" />
+            </field>
+        </field>
+    </record>
+
+</odoo>
