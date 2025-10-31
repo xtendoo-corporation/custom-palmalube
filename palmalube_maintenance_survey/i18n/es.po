@@ -1,0 +1,169 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# * palmalube_maintenance_survey
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-10-31 10:00:00\n"
+"PO-Revision-Date: 2025-10-31 10:00:00\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. module: palmalube_maintenance_survey
+#: model:ir.model.fields,field_description:palmalube_maintenance_survey.field_maintenance_equipment__default_survey_id
+msgid "Default Post-Service Survey"
+msgstr "Encuesta Post-Servicio por Defecto"
+
+#. module: palmalube_maintenance_survey
+#: model:ir.model.fields,help:palmalube_maintenance_survey.field_maintenance_equipment__default_survey_id
+msgid "This survey will be automatically assigned to new maintenance requests for this equipment"
+msgstr "Esta encuesta se asignará automáticamente a las nuevas solicitudes de mantenimiento para este equipo"
+
+#. module: palmalube_maintenance_survey
+#: model:ir.model.fields,field_description:palmalube_maintenance_survey.field_maintenance_request__survey_id
+msgid "Post-Service Survey"
+msgstr "Encuesta Post-Servicio"
+
+#. module: palmalube_maintenance_survey
+#: model:ir.model.fields,help:palmalube_maintenance_survey.field_maintenance_request__survey_id
+msgid "Survey to be completed after maintenance service"
+msgstr "Encuesta a completar después del servicio de mantenimiento"
+
+#. module: palmalube_maintenance_survey
+#: model:ir.model.fields,field_description:palmalube_maintenance_survey.field_maintenance_request__survey_user_input_id
+msgid "Survey Response"
+msgstr "Respuesta de Encuesta"
+
+#. module: palmalube_maintenance_survey
+#: model:ir.model.fields,help:palmalube_maintenance_survey.field_maintenance_request__survey_user_input_id
+msgid "Survey response submitted by the technician"
+msgstr "Respuesta de encuesta enviada por el técnico"
+
+#. module: palmalube_maintenance_survey
+#: model:ir.model.fields,field_description:palmalube_maintenance_survey.field_maintenance_request__survey_state
+msgid "Survey Status"
+msgstr "Estado de Encuesta"
+
+#. module: palmalube_maintenance_survey
+#: model:ir.model.fields.selection,name:palmalube_maintenance_survey.selection__maintenance_request__survey_state__not_started
+msgid "Not Started"
+msgstr "No Iniciada"
+
+#. module: palmalube_maintenance_survey
+#: model:ir.model.fields.selection,name:palmalube_maintenance_survey.selection__maintenance_request__survey_state__in_progress
+msgid "In Progress"
+msgstr "En Progreso"
+
+#. module: palmalube_maintenance_survey
+#: model:ir.model.fields.selection,name:palmalube_maintenance_survey.selection__maintenance_request__survey_state__completed
+msgid "Completed"
+msgstr "Completada"
+
+#. module: palmalube_maintenance_survey
+#: model:ir.model.fields.selection,name:palmalube_maintenance_survey.selection__maintenance_request__survey_state__failed
+msgid "Failed"
+msgstr "Fallida"
+
+#. module: palmalube_maintenance_survey
+#: model:ir.model.fields,field_description:palmalube_maintenance_survey.field_maintenance_request__survey_required
+msgid "Survey Required"
+msgstr "Encuesta Requerida"
+
+#. module: palmalube_maintenance_survey
+#: model:ir.model.fields,help:palmalube_maintenance_survey.field_maintenance_request__survey_required
+msgid "True if survey must be completed before closing this request"
+msgstr "Verdadero si la encuesta debe completarse antes de cerrar esta solicitud"
+
+#. module: palmalube_maintenance_survey
+#: model:ir.model.fields,field_description:palmalube_maintenance_survey.field_maintenance_stage__require_survey
+msgid "Require Survey"
+msgstr "Requiere Encuesta"
+
+#. module: palmalube_maintenance_survey
+#: model:ir.model.fields,help:palmalube_maintenance_survey.field_maintenance_stage__require_survey
+msgid "If checked, maintenance requests in this stage must complete the assigned survey before moving to another stage"
+msgstr "Si está marcado, las solicitudes de mantenimiento en esta etapa deben completar la encuesta asignada antes de pasar a otra etapa"
+
+#. module: palmalube_maintenance_survey
+#: model_terms:ir.ui.view,arch_db:palmalube_maintenance_survey.maintenance_request_view_form_inherit
+msgid "Start Survey"
+msgstr "Iniciar Encuesta"
+
+#. module: palmalube_maintenance_survey
+#: model_terms:ir.ui.view,arch_db:palmalube_maintenance_survey.maintenance_request_view_form_inherit
+msgid "Post-Service Control"
+msgstr "Control Post-Servicio"
+
+#. module: palmalube_maintenance_survey
+#: model_terms:ir.ui.view,arch_db:palmalube_maintenance_survey.maintenance_request_view_form_inherit
+msgid "Survey Required!"
+msgstr "¡Encuesta Requerida!"
+
+#. module: palmalube_maintenance_survey
+#: model_terms:ir.ui.view,arch_db:palmalube_maintenance_survey.maintenance_request_view_form_inherit
+msgid "This maintenance request requires completion of a post-service survey. Please complete the survey before closing this request."
+msgstr "Esta solicitud de mantenimiento requiere completar una encuesta post-servicio. Por favor complete la encuesta antes de cerrar esta solicitud."
+
+#. module: palmalube_maintenance_survey
+#: model_terms:ir.ui.view,arch_db:palmalube_maintenance_survey.maintenance_equipment_view_form_inherit
+msgid "Quality Control"
+msgstr "Control de Calidad"
+
+#. module: palmalube_maintenance_survey
+#: code:addons/palmalube_maintenance_survey/models/maintenance_request.py:0
+#, python-format
+msgid "No survey assigned to this maintenance request."
+msgstr "No hay encuesta asignada a esta solicitud de mantenimiento."
+
+#. module: palmalube_maintenance_survey
+#: code:addons/palmalube_maintenance_survey/models/maintenance_request.py:0
+#, python-format
+msgid "Cannot move to stage '%(stage)s' because the post-service survey is required but not completed.\\nPlease complete the survey first."
+msgstr "No se puede mover a la etapa '%(stage)s' porque la encuesta post-servicio es requerida pero no está completada.\\nPor favor complete la encuesta primero."
+
+#. module: palmalube_maintenance_survey
+#: code:addons/palmalube_maintenance_survey/models/maintenance_request.py:0
+#, python-format
+msgid "Survey started by %s"
+msgstr "Encuesta iniciada por %s"
+
+#. module: palmalube_maintenance_survey
+#: code:addons/palmalube_maintenance_survey/models/maintenance_request.py:0
+#, python-format
+msgid "Complete Survey: %s"
+msgstr "Completar Encuesta: %s"
+
+#. module: palmalube_maintenance_survey
+#: code:addons/palmalube_maintenance_survey/models/maintenance_request.py:0
+#, python-format
+msgid "Survey Response"
+msgstr "Respuesta de Encuesta"
+
+#. module: palmalube_maintenance_survey
+#: code:addons/palmalube_maintenance_survey/models/maintenance_request.py:0
+#, python-format
+msgid "No survey response found for this maintenance request."
+msgstr "No se encontró respuesta de encuesta para esta solicitud de mantenimiento."
+
+#. module: palmalube_maintenance_survey
+#: code:addons/palmalube_maintenance_survey/models/maintenance_request.py:0
+#, python-format
+msgid "Complete Post-Service Survey"
+msgstr "Completar Encuesta Post-Servicio"
+
+#. module: palmalube_maintenance_survey
+#: code:addons/palmalube_maintenance_survey/models/maintenance_request.py:0
+#, python-format
+msgid "Please complete the survey for maintenance request: %s"
+msgstr "Por favor complete la encuesta para la solicitud de mantenimiento: %s"
+
+#. module: palmalube_maintenance_survey
+#: code:addons/palmalube_maintenance_survey/models/survey_user_input.py:0
+#, python-format
+msgid "Survey completed by %s"
+msgstr "Encuesta completada por %s"
+

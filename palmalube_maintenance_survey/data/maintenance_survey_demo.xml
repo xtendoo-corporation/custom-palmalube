@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Demo Survey: Machinery Post-Service Checklist -->
+        <record id="survey_machinery_checklist" model="survey.survey">
+            <field name="title">Machinery Post-Service Checklist</field>
+            <field name="description">Quality control checklist to be completed after maintenance service</field>
+            <field name="access_mode">public</field>
+            <field name="users_can_go_back">True</field>
+            <field name="questions_layout">page_per_section</field>
+            <field name="scoring_type">no_scoring</field>
+        </record>
+
+        <!-- Page 1: General Status -->
+        <record id="survey_page_general" model="survey.question">
+            <field name="title">General Status</field>
+            <field name="survey_id" ref="survey_machinery_checklist"/>
+            <field name="sequence">10</field>
+            <field name="question_type">simple_choice</field>
+            <field name="constr_mandatory">True</field>
+            <field name="description">Overall equipment condition after service</field>
+        </record>
+
+        <record id="survey_page_general_answer_1" model="survey.question.answer">
+            <field name="value">Excellent - No issues detected</field>
+            <field name="question_id" ref="survey_page_general"/>
+            <field name="sequence">1</field>
+        </record>
+
+        <record id="survey_page_general_answer_2" model="survey.question.answer">
+            <field name="value">Good - Minor adjustments needed</field>
+            <field name="question_id" ref="survey_page_general"/>
+            <field name="sequence">2</field>
+        </record>
+
+        <record id="survey_page_general_answer_3" model="survey.question.answer">
+            <field name="value">Fair - Requires attention</field>
+            <field name="question_id" ref="survey_page_general"/>
+            <field name="sequence">3</field>
+        </record>
+
+        <record id="survey_page_general_answer_4" model="survey.question.answer">
+            <field name="value">Poor - Critical issues found</field>
+            <field name="question_id" ref="survey_page_general"/>
+            <field name="sequence">4</field>
+        </record>
+
+        <!-- Question 2: Safety Check -->
+        <record id="survey_question_safety" model="survey.question">
+            <field name="title">Safety Check</field>
+            <field name="survey_id" ref="survey_machinery_checklist"/>
+            <field name="sequence">20</field>
+            <field name="question_type">multiple_choice</field>
+            <field name="constr_mandatory">True</field>
+            <field name="description">Select all safety checks performed</field>
+        </record>
+
+        <record id="survey_question_safety_answer_1" model="survey.question.answer">
+            <field name="value">Emergency stop tested</field>
+            <field name="question_id" ref="survey_question_safety"/>
+            <field name="sequence">1</field>
+        </record>
+
+        <record id="survey_question_safety_answer_2" model="survey.question.answer">
+            <field name="value">Safety guards in place</field>
+            <field name="question_id" ref="survey_question_safety"/>
+            <field name="sequence">2</field>
+        </record>
+
+        <record id="survey_question_safety_answer_3" model="survey.question.answer">
+            <field name="value">Warning labels visible</field>
+            <field name="question_id" ref="survey_question_safety"/>
+            <field name="sequence">3</field>
+        </record>
+
+        <record id="survey_question_safety_answer_4" model="survey.question.answer">
+            <field name="value">Electrical safety verified</field>
+            <field name="question_id" ref="survey_question_safety"/>
+            <field name="sequence">4</field>
+        </record>
+
+        <!-- Question 3: Parts Replaced -->
+        <record id="survey_question_parts" model="survey.question">
+            <field name="title">Were any parts replaced?</field>
+            <field name="survey_id" ref="survey_machinery_checklist"/>
+            <field name="sequence">30</field>
+            <field name="question_type">simple_choice</field>
+            <field name="constr_mandatory">True</field>
+        </record>
+
+        <record id="survey_question_parts_answer_yes" model="survey.question.answer">
+            <field name="value">Yes</field>
+            <field name="question_id" ref="survey_question_parts"/>
+            <field name="sequence">1</field>
+        </record>
+
+        <record id="survey_question_parts_answer_no" model="survey.question.answer">
+            <field name="value">No</field>
+            <field name="question_id" ref="survey_question_parts"/>
+            <field name="sequence">2</field>
+        </record>
+
+        <!-- Question 4: Parts Details (conditional) -->
+        <record id="survey_question_parts_details" model="survey.question">
+            <field name="title">List of parts replaced</field>
+            <field name="survey_id" ref="survey_machinery_checklist"/>
+            <field name="sequence">40</field>
+            <field name="question_type">text_box</field>
+            <field name="constr_mandatory">False</field>
+            <field name="description">Please list all parts that were replaced during service</field>
+        </record>
+
+        <!-- Question 5: Additional Comments -->
+        <record id="survey_question_comments" model="survey.question">
+            <field name="title">Additional Comments and Observations</field>
+            <field name="survey_id" ref="survey_machinery_checklist"/>
+            <field name="sequence">50</field>
+            <field name="question_type">text_box</field>
+            <field name="constr_mandatory">False</field>
+            <field name="description">Any additional notes, observations, or recommendations</field>
+        </record>
+
+        <!-- Demo Maintenance Stage with Survey Required -->
+        <record id="maintenance_stage_post_service" model="maintenance.stage">
+            <field name="name">Post-Service Validation</field>
+            <field name="sequence">80</field>
+            <field name="done">False</field>
+            <field name="require_survey">True</field>
+        </record>
+
+    </data>
+</odoo>
+

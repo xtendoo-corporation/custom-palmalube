@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Inherit maintenance request form view -->
+    <record id="maintenance_request_view_form_inherit" model="ir.ui.view">
+        <field name="name">maintenance.request.form.inherit.survey</field>
+        <field name="model">maintenance.request</field>
+        <field name="inherit_id" ref="maintenance.hr_equipment_request_view_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Add survey fields after user -->
+            <field name="user_id" position="after">
+                <field name="survey_id" options="{'no_create': True}"/>
+                <field name="survey_state" widget="badge"
+                       decoration-warning="survey_state == 'in_progress'"
+                       decoration-success="survey_state == 'completed'"
+                       decoration-danger="survey_state == 'failed'"/>
+                <field name="survey_required" invisible="1"/>
+                <field name="survey_count" invisible="1"/>
+            </field>
+
+            <!-- Add buttons in header -->
+            <button name="archive_equipment_request" position="after">
+                <button name="action_start_survey"
+                        string="Start Survey"
+                        type="object"
+                        class="btn-secondary"
+                        invisible="not survey_id or survey_state == 'completed'"
+                        icon="fa-play-circle"/>
+                <button name="action_view_survey_result"
+                        string="View Survey"
+                        type="object"
+                        class="btn-secondary"
+                        invisible="survey_count == 0"
+                        icon="fa-check-square-o"/>
+            </button>
+
+        </field>
+    </record>
+
+    <!-- Inherit maintenance request tree view -->
+    <record id="maintenance_request_view_tree_inherit" model="ir.ui.view">
+        <field name="name">maintenance.request.tree.inherit.survey</field>
+        <field name="model">maintenance.request</field>
+        <field name="inherit_id" ref="maintenance.hr_equipment_request_view_tree"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='stage_id']" position="after">
+                <field name="survey_state"
+                       widget="badge"
+                       optional="show"
+                       decoration-warning="survey_state == 'in_progress'"
+                       decoration-success="survey_state == 'completed'"
+                       decoration-danger="survey_state == 'failed'"/>
+            </xpath>
+
+        </field>
+    </record>
+
+
+</odoo>
+
