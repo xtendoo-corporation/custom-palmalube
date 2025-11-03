@@ -20,6 +20,8 @@
         "views/maintenance_stage_views.xml",
         "views/maintenance_equipment_views.xml",
         "data/maintenance_survey_demo.xml",
+        "views/survey_templates.xml",
+        "views/survey_user_input_answers_inherit.xml",
     ],
     "demo": [
         "data/maintenance_survey_demo.xml",
@@ -28,4 +30,3 @@
     "application": False,
     "auto_install": False,
 }
-

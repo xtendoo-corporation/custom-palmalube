@@ -10,8 +10,8 @@ class MaintenanceRequest(models.Model):
 
     survey_id = fields.Many2one(
         "survey.survey",
-        string="Post-Service Survey",
-        help="Survey to be completed after maintenance service",
+        string="Encuesta de mantenimiento",
+        help="Encuesta que se asigna automáticamente según el equipo, pero puede modificarse manualmente si es necesario.",
         tracking=True,
     )
     survey_user_input_id = fields.Many2one(
@@ -104,61 +104,81 @@ class MaintenanceRequest(models.Model):
         return super().write(vals)
 
     def action_start_survey(self):
-        """Create or open survey user input for this maintenance request."""
+        """Abrir el wizard de participación de la encuesta para responder el checklist."""
         self.ensure_one()
 
         if not self.survey_id:
             raise UserError(_("No survey assigned to this maintenance request."))
 
-        # Check if survey input already exists
-        if self.survey_user_input_id:
-            user_input = self.survey_user_input_id
-        else:
-            # Create new survey user input
+        # Buscar SIEMPRE el registro existente de survey.user_input
+        user_input = self.env["survey.user_input"].search([
+            ("survey_id", "=", self.survey_id.id),
+            ("maintenance_request_id", "=", self.id),
+        ], limit=1)
+        if not user_input:
             partner_id = False
             if self.user_id:
                 partner_id = self.user_id.partner_id.id
             elif self.owner_user_id:
                 partner_id = self.owner_user_id.partner_id.id
-
-            user_input = self.env["survey.user_input"].create(
-                {
-                    "survey_id": self.survey_id.id,
-                    "partner_id": partner_id,
-                    "maintenance_request_id": self.id,
-                }
-            )
-            self.survey_user_input_id = user_input.id
-
-        # Send notification
-        self.message_post(
-            body=_("Survey started by %s", self.env.user.name),
-            message_type="notification",
-        )
-
-        # Return action to open survey
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Complete Survey: %s", self.survey_id.title),
-            "res_model": "survey.user_input",
-            "res_id": user_input.id,
-            "view_mode": "form",
-            "target": "current",
-            "context": {"form_view_initial_mode": "edit"},
-        }
+            user_input = self.env["survey.user_input"].create({
+                "survey_id": self.survey_id.id,
+                "partner_id": partner_id,
+                "maintenance_request_id": self.id,
+            })
+        # SIEMPRE devolver el registro existente (o el recién creado)
+        return self.survey_id.with_context(
+            active_id=self.id,
+            active_model="maintenance.request",
+            user_input_id=user_input.id,
+        ).action_start_survey()
 
     def action_view_survey_result(self):
-        """Open survey response."""
+        """Abrir SIEMPRE el registro survey.user_input con datos, aunque existan dos."""
         self.ensure_one()
-
-        if not self.survey_user_input_id:
+        # Buscar el registro survey.user_input con respuestas (prioridad: estado 'done')
+        user_input = self.env["survey.user_input"].search([
+            ("survey_id", "=", self.survey_id.id),
+            ("maintenance_request_id", "=", self.id),
+            ("state", "=", "done"),
+        ], order="id desc", limit=1)
+        if not user_input:
+            user_input = self.env["survey.user_input"].search([
+                ("survey_id", "=", self.survey_id.id),
+                ("maintenance_request_id", "=", self.id),
+            ], order="id desc", limit=1)
+        if not user_input:
             raise UserError(_("No survey response found for this maintenance request."))
-
         return {
             "type": "ir.actions.act_window",
             "name": _("Survey Response"),
             "res_model": "survey.user_input",
-            "res_id": self.survey_user_input_id.id,
+            "res_id": user_input.id,
+            "view_mode": "form",
+            "target": "current",
+        }
+
+    def action_view_results(self):
+        """Abrir la vista de resultados de la encuesta asociada a la solicitud."""
+        self.ensure_one()
+        # Buscar el registro survey.user_input correcto
+        user_input = self.env["survey.user_input"].search([
+            ("survey_id", "=", self.survey_id.id),
+            ("maintenance_request_id", "=", self.id),
+            ("state", "=", "done"),
+        ], limit=1)
+        if not user_input:
+            user_input = self.env["survey.user_input"].search([
+                ("survey_id", "=", self.survey_id.id),
+                ("maintenance_request_id", "=", self.id),
+            ], limit=1)
+        if not user_input:
+            raise UserError("No hay respuesta de encuesta asociada a esta solicitud.")
+        return {
+            "type": "ir.actions.act_window",
+            "name": "Resultados de la Encuesta",
+            "res_model": "survey.user_input",
+            "res_id": user_input.id,
             "view_mode": "form",
             "target": "current",
         }
@@ -179,4 +199,9 @@ class MaintenanceRequest(models.Model):
                             self.name,
                         ),
                     )
+
+    @api.onchange('equipment_id')
+    def _onchange_equipment_id_set_survey(self):
+        if self.equipment_id and self.equipment_id.default_survey_id:
+            self.survey_id = self.equipment_id.default_survey_id
 

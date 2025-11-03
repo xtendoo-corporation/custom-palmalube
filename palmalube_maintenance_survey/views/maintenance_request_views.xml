@@ -10,30 +10,33 @@
 
             <!-- Add survey fields after user -->
             <field name="user_id" position="after">
-                <field name="survey_id" options="{'no_create': True}"/>
-                <field name="survey_state" widget="badge"
-                       decoration-warning="survey_state == 'in_progress'"
-                       decoration-success="survey_state == 'completed'"
-                       decoration-danger="survey_state == 'failed'"/>
-                <field name="survey_required" invisible="1"/>
-                <field name="survey_count" invisible="1"/>
+                <field name="equipment_id"/>
+                <group string="Checklist de Mantenimiento">
+                    <field name="survey_id" options="{'no_create': True}"/>
+                    <field name="survey_state" widget="badge"
+                           decoration-warning="survey_state == 'in_progress'"
+                           decoration-success="survey_state == 'completed'"
+                           decoration-danger="survey_state == 'failed'"/>
+                    <field name="survey_required" invisible="1"/>
+                    <field name="survey_count" invisible="1"/>
+                </group>
             </field>
 
             <!-- Add buttons in header -->
-            <button name="archive_equipment_request" position="after">
+            <header position="inside">
                 <button name="action_start_survey"
-                        string="Start Survey"
+                        string="Iniciar Checklist"
                         type="object"
                         class="btn-secondary"
                         invisible="not survey_id or survey_state == 'completed'"
                         icon="fa-play-circle"/>
-                <button name="action_view_survey_result"
-                        string="View Survey"
+                <button name="action_view_results"
+                        string="Ver Resultados de Encuesta"
                         type="object"
                         class="btn-secondary"
-                        invisible="survey_count == 0"
-                        icon="fa-check-square-o"/>
-            </button>
+                        invisible="survey_user_input_id == False"
+                        icon="fa-table"/>
+            </header>
 
         </field>
     </record>
@@ -59,4 +62,3 @@
 
 
 </odoo>
-

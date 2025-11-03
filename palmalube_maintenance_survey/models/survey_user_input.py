@@ -14,6 +14,14 @@ class SurveyUserInput(models.Model):
         help="Maintenance request linked to this survey response",
     )
 
+    _sql_constraints = [
+        (
+            "maintenance_request_survey_unique",
+            "unique(maintenance_request_id, survey_id)",
+            "Solo puede existir una respuesta de encuesta por solicitud de mantenimiento y encuesta.",
+        ),
+    ]
+
     def write(self, vals):
         """Sync survey state to maintenance request when completed."""
         res = super().write(vals)
@@ -27,9 +35,75 @@ class SurveyUserInput(models.Model):
                 if vals["state"] == "done":
                     # Post message in maintenance request
                     user_input.maintenance_request_id.message_post(
-                        body=_("Survey completed by %s", self.env.user.name),
+                        body="Encuesta completada por %s" % self.env.user.name,
                         message_type="notification",
                     )
 
         return res
 
+    def action_view_results(self):
+        self.ensure_one()
+        if self.maintenance_request_id:
+            return {
+                'type': 'ir.actions.act_window',
+                'id': self.env.ref('maintenance.action_maintenance_request').id,
+                'res_model': 'survey.user_input',
+                'res_id': self.id,
+                'view_mode': 'form',
+                'target': 'current',
+                'context': {
+                    'active_id': self.maintenance_request_id.id,
+                    'active_model': 'maintenance.request',
+                },
+            }
+        # Si no hay solicitud vinculada, mostrar la vista normal
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Resultados de la Encuesta',
+            'res_model': 'survey.user_input',
+            'res_id': self.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }
+
+    def create(self, vals):
+        survey_id = vals.get('survey_id')
+        maintenance_request_id = vals.get('maintenance_request_id')
+        ctx = self.env.context
+        # Si no hay maintenance_request_id, intentar vincularlo por contexto o por búsqueda
+        if not maintenance_request_id:
+            # Intentar contexto
+            if ctx.get('active_model') == 'maintenance.request' and ctx.get('active_id'):
+                vals['maintenance_request_id'] = ctx['active_id']
+                maintenance_request_id = vals['maintenance_request_id']
+            # Si sigue sin estar, buscar el mantenimiento por usuario y survey
+            elif survey_id:
+                # Buscar el mantenimiento más reciente con ese survey y estado abierto
+                request = self.env['maintenance.request'].search([
+                    ('survey_id', '=', survey_id),
+                    ('stage_id', '!=', False),
+                ], order='id desc', limit=1)
+                if request:
+                    vals['maintenance_request_id'] = request.id
+                    maintenance_request_id = request.id
+        # Si existe un registro para la combinación, reutilizarlo
+        if survey_id and maintenance_request_id:
+            existing = self.env['survey.user_input'].search([
+                ('survey_id', '=', survey_id),
+                ('maintenance_request_id', '=', maintenance_request_id)
+            ], limit=1)
+            if existing:
+                existing.sudo().write(vals)
+                return existing
+        record = super().create(vals)
+        if record.maintenance_request_id:
+            record.maintenance_request_id.sudo().write({'survey_user_input_id': record.id})
+        return record
+
+    def write(self, vals):
+        res = super().write(vals)
+        # Si el registro está vinculado y se marca como completado, asegurar el vínculo
+        for user_input in self.filtered('maintenance_request_id'):
+            if user_input.maintenance_request_id.survey_user_input_id != user_input:
+                user_input.maintenance_request_id.sudo().write({'survey_user_input_id': user_input.id})
+        return res
