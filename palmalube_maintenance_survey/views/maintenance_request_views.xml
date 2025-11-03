@@ -9,9 +9,8 @@
         <field name="arch" type="xml">
 
             <!-- Add survey fields after user -->
-            <field name="user_id" position="after">
-                <field name="equipment_id"/>
-                <group string="Checklist de Mantenimiento">
+            <field name="maintenance_type" position="after">
+<!--                <group string="Checklist de Mantenimiento">-->
                     <field name="survey_id" options="{'no_create': True}"/>
                     <field name="survey_state" widget="badge"
                            decoration-warning="survey_state == 'in_progress'"
@@ -19,7 +18,7 @@
                            decoration-danger="survey_state == 'failed'"/>
                     <field name="survey_required" invisible="1"/>
                     <field name="survey_count" invisible="1"/>
-                </group>
+<!--                </group>-->
             </field>
 
             <!-- Add buttons in header -->
@@ -47,7 +46,6 @@
         <field name="model">maintenance.request</field>
         <field name="inherit_id" ref="maintenance.hr_equipment_request_view_tree"/>
         <field name="arch" type="xml">
-
             <xpath expr="//field[@name='stage_id']" position="after">
                 <field name="survey_state"
                        widget="badge"
@@ -56,7 +54,6 @@
                        decoration-success="survey_state == 'completed'"
                        decoration-danger="survey_state == 'failed'"/>
             </xpath>
-
         </field>
     </record>
 
