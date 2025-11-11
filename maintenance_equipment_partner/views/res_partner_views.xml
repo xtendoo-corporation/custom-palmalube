@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2025 Ivan Parrado, Manuel Calero, Xtendoo SLU -->
+<!-- License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+
+    <record id="view_partner_form_equipment" model="ir.ui.view">
+        <field name="name">res.partner.form.equipment</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <field name="priority">2</field>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button
+                    name="action_view_equipments"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-wrench"
+                    invisible="equipment_count == 0"
+                >
+                    <field name="equipment_count" widget="statinfo" string="Equipos" />
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
+

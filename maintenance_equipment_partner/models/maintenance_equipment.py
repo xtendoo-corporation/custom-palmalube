@@ -9,22 +9,24 @@ class MaintenanceEquipment(models.Model):
 
     partner_id = fields.Many2one(
         comodel_name="res.partner",
+        string="Proveedor",
+        help="Proveedor del equipo de mantenimiento",
+        tracking=True,
+    )
+
+    customer_id = fields.Many2one(
+        comodel_name="res.partner",
         string="Cliente",
         help="Cliente asociado a este equipo de mantenimiento",
         tracking=True,
     )
 
-    equipment_model = fields.Char(
-        string="Modelo",
-        help="Modelo del equipo",
+    equipment_brand = fields.Char(
+        string="Marca",
+        help="Marca del equipo",
         tracking=True,
     )
 
-    equipment_serial = fields.Char(
-        string="Número de Serie",
-        help="Número de serie del equipo",
-        tracking=True,
-    )
 
     year_manufacture = fields.Integer(
         string="Año de Fabricación",
@@ -38,3 +40,11 @@ class MaintenanceEquipment(models.Model):
         tracking=True,
         digits='Product Price',
     )
+
+    note = fields.Html(
+        string="Descripción",
+        help="Descripción detallada del equipo",
+        tracking=True,
+    )
+
+

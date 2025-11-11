@@ -8,12 +8,21 @@
         <field name="model">maintenance.equipment</field>
         <field name="inherit_id" ref="maintenance.hr_equipment_view_form" />
         <field name="arch" type="xml">
+            <!-- Añadir campos después de category_id y luego ocultar category_id -->
             <xpath expr="//field[@name='category_id']" position="after">
-                <field name="partner_id" />
-                <field name="equipment_model" />
-                <field name="equipment_serial" />
-                <field name="year_manufacture" />
+                <field name="customer_id" />
                 <field name="maintenance_price" />
+            </xpath>
+
+            <!-- Ocultar campo category_id -->
+            <xpath expr="//field[@name='category_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='model']" position="before">
+                <field name="equipment_brand" />
+            </xpath>
+            <xpath expr="//field[@name='cost']" position="before">
+                <field name="year_manufacture" />
             </xpath>
         </field>
     </record>
@@ -23,16 +32,20 @@
         <field name="model">maintenance.equipment</field>
         <field name="inherit_id" ref="maintenance.hr_equipment_view_search" />
         <field name="arch" type="xml">
-            <field name="category_id" position="after">
-                <field name="partner_id" />
-                <field name="equipment_model" />
-                <field name="equipment_serial" />
+            <field name="name" position="after">
+                <field name="customer_id" />
+                <field name="equipment_brand" />
                 <field name="year_manufacture" />
             </field>
             <group position="inside">
                 <filter
-                    name="groupby_partner"
+                    name="groupby_customer"
                     string="Cliente"
+                    context="{'group_by': 'customer_id'}"
+                />
+                <filter
+                    name="groupby_partner"
+                    string="Proveedor"
                     context="{'group_by': 'partner_id'}"
                 />
             </group>
@@ -45,13 +58,11 @@
         <field name="inherit_id" ref="maintenance.hr_equipment_view_tree" />
         <field name="arch" type="xml">
             <field name="name" position="after">
-                <field name="partner_id" optional="show" />
-                <field name="equipment_model" optional="show" />
-                <field name="equipment_serial" optional="show" />
+                <field name="customer_id" optional="show" />
+                <field name="equipment_brand" optional="show" />
                 <field name="year_manufacture" optional="hide" />
                 <field name="maintenance_price" optional="hide" />
             </field>
         </field>
     </record>
-
 </odoo>
