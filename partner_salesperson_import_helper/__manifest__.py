@@ -3,8 +3,8 @@
     'version': '18.0.1.0.0',
     'category': 'Tools',
     'summary': 'Importa comerciales a clientes desde Excel',
-    'author': 'Palmalube',
-    'website': 'https://palmalube.com',
+    'author': 'Ivan Parrado',
+    'website': 'https://xtendoo.es',
     'depends': ['base', 'contacts'],
     'data': [
         'security/ir.model.access.csv',

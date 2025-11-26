@@ -71,9 +71,13 @@ class PartnerSalespersonImportWizard(models.TransientModel):
                         break
             if not user:
                 # Crear usuario con nombre completo y login único
+                # Formatear nombre completo: primera letra de cada palabra en mayúscula, resto en minúscula
+                def titlecase(s):
+                    return ' '.join([w.capitalize() for w in s.split()])
+                nombre_completo_title = titlecase(nombre_completo)
                 vals = {
                     'login': login,
-                    'name': nombre_completo,
+                    'name': nombre_completo_title,
                 }
                 try:
                     user = self.env['res.users'].sudo().create(vals)
