@@ -20,40 +20,132 @@ class PartnerSalespersonImportWizard(models.TransientModel):
         try:
             data = base64.b64decode(self.file)
             df = pd.read_excel(io.BytesIO(data))
-            df.columns = [c.lower() for c in df.columns]
+            # Normalizar nombres de columnas para evitar errores por espacios, mayúsculas o guiones
+            df.columns = [c.strip().lower().replace(' ', '_').replace('-', '_') for c in df.columns]
         except Exception as e:
             raise UserError(_('Error leyendo el archivo: %s') % e)
-        col_cliente = 'id_cliente'
-        col_nombre = 'nombreagente'
-        col_apellidos = 'apellidosagente'
-        for col in [col_cliente, col_nombre, col_apellidos]:
+        # Mapear nombres de columnas originales en mayúsculas a los nombres internos
+        col_map = {
+            'id_cliente': 'id_cliente',
+            'nombreagente': 'nombreagente',
+            'apellidosagente': 'apellidosagente',
+            'razon_social': 'razon_social',
+            'direccion': 'direccion',
+            'cif': 'cif',
+            'telefono_fijo': 'telefono_fijo',
+            'telefono_movil': 'telefono_movil',
+            'email': 'email',
+        }
+        for col in col_map:
             if col not in df.columns:
-                raise UserError(_('El archivo debe tener la columna: %s') % col)
+                # Intentar buscar la columna en mayúsculas
+                col_upper = col.upper()
+                if col_upper in [c.upper() for c in df.columns]:
+                    idx = [c.upper() for c in df.columns].index(col_upper)
+                    df.rename(columns={df.columns[idx]: col}, inplace=True)
+                else:
+                    raise UserError(_('El archivo debe tener la columna: %s') % col)
         updated = 0
         not_found = []
         not_updated = []
+        # Llevar control de los clientes ya procesados para evitar duplicados
+        clientes_procesados = set()
+        # Definir variables de columna para uso posterior
+        col_cliente = 'id_cliente'
+        col_nombre = 'nombreagente'
+        col_apellidos = 'apellidosagente'
+        col_razon = 'razon_social'
+        col_direccion = 'direccion'
+        col_cif = 'cif'
+        col_telefono = 'telefono_fijo'
+        col_movil = 'telefono_movil'
+        col_email = 'email'
+        col_cp = 'codigopostal'
+        col_ciudad = 'muni_descr'
+        col_provincia = 'provi_descr'
+        # Añadir las nuevas columnas a la comprobación
+        for col in [col_cp, col_ciudad, col_provincia]:
+            if col not in df.columns:
+                col_upper = col.upper()
+                if col_upper in [c.upper() for c in df.columns]:
+                    idx = [c.upper() for c in df.columns].index(col_upper)
+                    df.rename(columns={df.columns[idx]: col}, inplace=True)
+                else:
+                    raise UserError(_('El archivo debe tener la columna: %s') % col)
         for idx, row in df.iterrows():
             try:
-                codigo_cliente = str(int(row[col_cliente])) if pd.notnull(row[col_cliente]) else None
+                # Usar el valor original de la celda, sin convertir a int, para evitar perder ceros
+                raw_cliente = row[col_cliente]
+                if pd.isnull(raw_cliente):
+                    codigo_cliente = None
+                else:
+                    codigo_cliente = str(raw_cliente).strip()
                 nombre_agente = str(row[col_nombre]).strip() if pd.notnull(row[col_nombre]) else ''
                 apellidos_agente = str(row[col_apellidos]).strip() if pd.notnull(row[col_apellidos]) else ''
                 nombre_completo = f"{nombre_agente} {apellidos_agente}".strip()
                 nombre_completo_lower = nombre_completo.lower()
+                cp = str(row[col_cp]).strip() if pd.notnull(row[col_cp]) else ''
+                ciudad = str(row[col_ciudad]).strip() if pd.notnull(row[col_ciudad]) else ''
+                provincia = str(row[col_provincia]).strip() if pd.notnull(row[col_provincia]) else ''
             except Exception:
                 not_found.append((row.get(col_cliente), '', 'Datos no válidos'))
                 continue
             if not codigo_cliente or not nombre_completo:
                 not_found.append((row.get(col_cliente), '', 'Datos vacíos'))
                 continue
+            # Evitar procesar el mismo cliente más de una vez
+            if codigo_cliente in clientes_procesados:
+                continue
+            clientes_procesados.add(codigo_cliente)
             _logger.info(f"Buscando partner con ref={codigo_cliente}")
             partner = self.env['res.partner'].sudo().search([('ref', '=', codigo_cliente)], limit=1)
-            if partner:
-                _logger.info(f"Partner encontrado: ID={partner.id}, name={partner.name}, ref={partner.ref}, user_id antes={partner.user_id.id}, company_type={partner.company_type}")
-            else:
-                _logger.info(f"No se encontró partner con ref={codigo_cliente}")
+            # Si no encuentra, intentar con ceros a la derecha hasta 4 dígitos
+            if not partner and codigo_cliente.isdigit() and len(codigo_cliente) < 4:
+                for extra_zeros in range(1, 5 - len(codigo_cliente)):
+                    ref_ceros = codigo_cliente + ('0' * extra_zeros)
+                    _logger.info(f"Intentando buscar partner con ref={ref_ceros}")
+                    partner = self.env['res.partner'].sudo().search([('ref', '=', ref_ceros)], limit=1)
+                    if partner:
+                        break
+            # Si sigue sin encontrar, crearlo con los datos del Excel
             if not partner:
-                not_found.append((codigo_cliente, '', 'Cliente no encontrado'))
-                continue
+                # Buscar por nombre y/o email antes de crear para evitar duplicados (sin exigir NIF válido)
+                search_domain = [('name', '=', str(row[col_razon]).strip())]
+                email_excel = str(row[col_email]).strip() if pd.notnull(row[col_email]) else ''
+                if email_excel:
+                    search_domain.append(('email', '=', email_excel))
+                partner = self.env['res.partner'].sudo().search(search_domain, limit=1)
+            if not partner:
+                try:
+                    vals_partner = {
+                        'ref': codigo_cliente,
+                        'name': str(row[col_razon]).strip() if pd.notnull(row[col_razon]) else '',
+                        'street': str(row[col_direccion]).strip() if pd.notnull(row[col_direccion]) else '',
+                        'zip': cp,
+                        'city': ciudad,
+                        'state_id': False,  # Se buscará la provincia abajo
+                        'vat': str(row[col_cif]) if pd.notnull(row[col_cif]) else '',  # Insertar NIF tal cual, sin strip ni validación
+                        'phone': str(row[col_telefono]).strip() if pd.notnull(row[col_telefono]) else '',
+                        'mobile': str(row[col_movil]).strip() if pd.notnull(row[col_movil]) else '',
+                        'email': email_excel,
+                        'country_id': self.env.ref('base.es').id if self.env.ref('base.es', raise_if_not_found=False) else False,
+                        'company_type': 'company',
+                        'is_company': True,
+                        'customer_rank': 1,
+                    }
+                    # Buscar provincia (state_id) por nombre
+                    state = self.env['res.country.state'].sudo().search([
+                        ('name', 'ilike', provincia),
+                        ('country_id', '=', vals_partner['country_id'])
+                    ], limit=1) if provincia and vals_partner['country_id'] else False
+                    if state:
+                        vals_partner['state_id'] = state.id
+                    partner = self.env['res.partner'].sudo().create(vals_partner)
+                    _logger.info(f"Partner creado: {partner.id} {partner.name}")
+                except Exception as e:
+                    not_found.append((codigo_cliente, '', f"No se pudo crear partner: {e}"))
+                    _logger.error(f"No se pudo crear partner {codigo_cliente}: {e}")
+                    continue
             # Buscar usuario comercial por nombre completo normalizado o login generado
             login = f"auto_user_{nombre_completo_lower.replace(' ', '_')}@import.local"
             user = self.env['res.users'].sudo().search([('login', '=', login)], limit=1)
@@ -86,9 +178,8 @@ class PartnerSalespersonImportWizard(models.TransientModel):
                     not_found.append((codigo_cliente, nombre_completo, f"No se pudo crear usuario: {e}"))
                     _logger.error(f"No se pudo crear usuario {nombre_completo}: {e}")
                     continue
-            # No actualizar el nombre si el usuario ya existe, solo usarlo tal cual
+            # Asignar el comercial encontrado o creado al cliente
             try:
-                old_user = partner.user_id.id
                 partner.sudo().write({'user_id': user.id})
                 partner = self.env['res.partner'].sudo().browse(partner.id)
                 _logger.info(f"user_id después={partner.user_id.id}")
@@ -96,7 +187,7 @@ class PartnerSalespersonImportWizard(models.TransientModel):
                     updated += 1
                     _logger.info(f"Asignado user_id {user.id} a partner {partner.id}")
                 else:
-                    not_updated.append((codigo_cliente, nombre_completo, f"No se pudo actualizar (user_id previo: {old_user}, después: {partner.user_id.id})"))
+                    not_updated.append((codigo_cliente, nombre_completo, f"No se pudo actualizar (user_id previo: {partner.user_id.id})"))
                     _logger.warning(f"No se pudo actualizar user_id para partner {partner.id}")
             except Exception as e:
                 not_updated.append((codigo_cliente, nombre_completo, f"Error: {e}"))
