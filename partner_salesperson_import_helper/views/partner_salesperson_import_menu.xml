@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_partner_salesperson_import_root" name="Importar comerciales a clientes" parent="contacts.menu_contacts" action="action_partner_salesperson_import_wizard" sequence="100"/>
+</odoo>
+
