@@ -1,2 +1,2 @@
 from . import partner_salesperson_import_wizard
-
+from . import partner_contact_address_import_wizard

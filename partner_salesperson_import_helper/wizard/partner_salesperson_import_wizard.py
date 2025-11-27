@@ -20,8 +20,8 @@ class PartnerSalespersonImportWizard(models.TransientModel):
         try:
             data = base64.b64decode(self.file)
             df = pd.read_excel(io.BytesIO(data))
-            # Normalizar nombres de columnas para evitar errores por espacios, mayúsculas o guiones
-            df.columns = [c.strip().lower().replace(' ', '_').replace('-', '_') for c in df.columns]
+            # No normalizamos a minúsculas, mantenemos mayúsculas para coincidir con el Excel
+            df.columns = [c.strip().replace(' ', '_').replace('-', '_') for c in df.columns]
         except Exception as e:
             raise UserError(_('Error leyendo el archivo: %s') % e)
         # Mapear nombres de columnas originales en mayúsculas a los nombres internos
@@ -48,9 +48,7 @@ class PartnerSalespersonImportWizard(models.TransientModel):
         updated = 0
         not_found = []
         not_updated = []
-        # Llevar control de los clientes ya procesados para evitar duplicados
         clientes_procesados = set()
-        # Definir variables de columna para uso posterior
         col_cliente = 'id_cliente'
         col_nombre = 'nombreagente'
         col_apellidos = 'apellidosagente'
@@ -63,7 +61,6 @@ class PartnerSalespersonImportWizard(models.TransientModel):
         col_cp = 'codigopostal'
         col_ciudad = 'muni_descr'
         col_provincia = 'provi_descr'
-        # Añadir las nuevas columnas a la comprobación
         for col in [col_cp, col_ciudad, col_provincia]:
             if col not in df.columns:
                 col_upper = col.upper()
@@ -74,7 +71,6 @@ class PartnerSalespersonImportWizard(models.TransientModel):
                     raise UserError(_('El archivo debe tener la columna: %s') % col)
         for idx, row in df.iterrows():
             try:
-                # Usar el valor original de la celda, sin convertir a int, para evitar perder ceros
                 raw_cliente = row[col_cliente]
                 if pd.isnull(raw_cliente):
                     codigo_cliente = None

@@ -9,10 +9,10 @@
     'data': [
         'security/ir.model.access.csv',
         'wizard/partner_salesperson_import_wizard_view.xml',
+        'wizard/partner_contact_address_import_wizard_view.xml',
         'views/partner_salesperson_import_menu.xml',
     ],
     'installable': True,
     'application': False,
     'license': 'LGPL-3',
 }
-
