@@ -47,12 +47,22 @@ class PartnerContactAddressImportWizard(models.TransientModel):
         errores = []
         creados = 0
         for idx, row in df.iterrows():
+            # Lógica robusta: buscar por ref exacta, por ref con punto de miles, y por ref sin punto de miles
             ref = str(row[col_id_cliente]).strip() if pd.notnull(row[col_id_cliente]) else None
-            if not ref:
-                _logger.warning('Fila %s sin ID_CLIENTE', idx)
-                errores.append((idx, 'Sin ID_CLIENTE'))
-                continue
+            _logger.info('Fila %s: ref crudo: %r, tipo: %s', idx, row[col_id_cliente], type(row[col_id_cliente]))
+            _logger.info('Fila %s: ref final usado para búsqueda: %r', idx, ref)
             partner = self.env['res.partner'].sudo().search([('ref', '=', ref)], limit=1)
+            if not partner and ref:
+                # Si la ref es numérica, probar con formato de miles (ej: 1737 -> 1.737)
+                if ref.isdigit() and len(ref) > 3:
+                    ref_miles = f"{int(ref):,}".replace(",", ".")
+                    _logger.info('Fila %s: ref con punto de miles para búsqueda: %r', idx, ref_miles)
+                    partner = self.env['res.partner'].sudo().search([('ref', '=', ref_miles)], limit=1)
+                # Si la ref tiene punto de miles, probar quitando el punto
+                if not partner and '.' in ref:
+                    ref_no_puntos = ref.replace('.', '')
+                    _logger.info('Fila %s: ref sin puntos para búsqueda: %r', idx, ref_no_puntos)
+                    partner = self.env['res.partner'].sudo().search([('ref', '=', ref_no_puntos)], limit=1)
             if not partner:
                 _logger.warning('No encontrado en Odoo: %s', ref)
                 errores.append((ref, 'No encontrado en Odoo'))
