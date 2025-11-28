@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class ResPartner(models.Model):
@@ -33,3 +34,12 @@ class ResPartner(models.Model):
         }
         return action
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            vat = vals.get("vat")
+            if vat:
+                existing = self.env["res.partner"].search([("vat", "=", vat)], limit=1)
+                if existing:
+                    raise ValidationError("No se puede crear el contacto porque el NIF ya existe.")
+        return super(ResPartner, self).create(vals_list)
