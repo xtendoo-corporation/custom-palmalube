@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Survey User Input Report -->
+        <record id="action_report_survey_user_input" model="ir.actions.report">
+            <field name="name">Survey Responses Table</field>
+            <field name="model">survey.user_input</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">palmalube_survey_report.report_survey_user_input_table</field>
+            <field name="report_file">palmalube_survey_report.report_survey_user_input_table</field>
+            <field name="print_report_name">'Survey Responses - %s' % (object.survey_id.title)</field>
+            <field name="binding_model_id" ref="survey.model_survey_user_input"/>
+            <field name="binding_type">report</field>
+        </record>
+    </data>
+</odoo>
+
