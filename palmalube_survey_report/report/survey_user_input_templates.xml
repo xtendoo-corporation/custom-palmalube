@@ -44,25 +44,29 @@
                                         <thead>
                                             <tr>
                                                 <th class="text-left" style="width: 50%;">Pregunta</th>
-                                                <th class="text-left" style="width: 50%;">Respuesta</th>
+                                                <th class="text-center" style="width: 25%;">BIEN</th>
+                                                <th class="text-center" style="width: 25%;">MAL</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <t t-foreach="o.user_input_line_ids.sorted(key=lambda l: (l.question_sequence, l.id))" t-as="line">
+                                            <t t-foreach="o.user_input_line_ids.sorted(key=lambda l: (l.question_sequence, l.id))"
+                                               t-as="line">
                                                 <tr>
                                                     <td>
                                                         <strong t-field="line.question_id.title"/>
                                                         <div t-if="line.question_id.description" class="text-muted small">
-                                                            <t t-field="line.question_id.description"/>
+                                                            <span t-field="line.question_id.description"/>
                                                         </div>
                                                     </td>
-                                                    <td>
-                                                        <t t-if="line.skipped">
-                                                            <em class="text-muted">Pregunta omitida</em>
-                                                        </t>
-                                                        <t t-else="">
-                                                            <span t-field="line.display_name"/>
-                                                        </t>
+                                                    <td class="text-center">
+                                                        <input type="checkbox"
+                                                               t-att-checked="'checked' if line.display_name == 'BIEN' else None"
+                                                               disabled="disabled"/>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <input type="checkbox"
+                                                               t-att-checked="'checked' if line.display_name == 'MAL' else None"
+                                                               disabled="disabled"/>
                                                     </td>
                                                 </tr>
                                             </t>
@@ -76,7 +80,8 @@
                                 <div class="col-12">
                                     <div class="alert alert-info">
                                         <strong>Puntuación:</strong>
-                                        <span t-field="o.scoring_total"/> /
+                                        <span t-field="o.scoring_total"/>
+                                        /
                                         <span t-esc="o.scoring_total_max or 0"/>
                                         <t t-if="o.scoring_percentage">
                                             (<span t-esc="'%.2f' % o.scoring_percentage"/>%)
@@ -91,4 +96,3 @@
         </template>
     </data>
 </odoo>
-
