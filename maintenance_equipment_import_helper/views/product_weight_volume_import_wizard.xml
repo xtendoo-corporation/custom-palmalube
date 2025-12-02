@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- VISTA DEL WIZARD -->
+    <record id="view_product_weight_volume_import_wizard_form" model="ir.ui.view">
+        <field name="name">product.weight.volume.import.wizard.form</field>
+        <field name="model">product.weight.volume.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Importar Peso y Volumen de Productos">
+                <group>
+                    <field name="file" filename="filename"/>
+                </group>
+                <footer>
+                    <button name="action_import" type="object" string="Importar" class="btn-primary"/>
+                    <button name="action_test_import" type="object" string="Probar Importación" class="btn-secondary"/>
+                    <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+
+    <!-- ACCIÓN PARA ABRIR EL WIZARD -->
+    <record id="action_product_weight_volume_import_wizard" model="ir.actions.act_window">
+        <field name="name">Importar Peso y Volumen de Productos</field>
+        <field name="res_model">product.weight.volume.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+
+    <!-- ACCIÓN DEL ENGRANAJE (ACCIONES) EN LA LISTA DE PRODUCTOS -->
+    <record id="server_action_product_weight_volume_import" model="ir.actions.server">
+        <field name="name">Importar peso y volumen</field>
+        <field name="model_id" ref="product.model_product_template"/>
+        <field name="binding_model_id" ref="product.model_product_template"/>
+        <field name="binding_type">action</field>
+        <field name="state">code</field>
+        <field name="code">
+            action = {
+            'type': 'ir.actions.act_window',
+            'name': 'Importar Peso y Volumen',
+            'res_model': 'product.weight.volume.import.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            }
+        </field>
+    </record>
+
+
+    <!-- MENÚ EN INVENTARIO (como submenú principal, junto a Información general, Operaciones, Productos, Informes, Configuración) -->
+    <menuitem id="menu_product_weight_volume_import_inventory"
+              name="Importar peso y volumen de productos"
+              parent="stock.menu_stock_root"
+              action="action_product_weight_volume_import_wizard"
+              sequence="99"/>
+
+</odoo>

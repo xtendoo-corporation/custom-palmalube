@@ -12,10 +12,15 @@
     "depends": [
         "maintenance",
         "maintenance_equipment_partner",
+        "stock",
+        "product",
     ],
-    "data": [],
+    "data": [
+        "security/ir.model.access.csv",
+        "views/product_weight_volume_import_wizard.xml",
+        # Aseguramos que el wizard se carga
+    ],
     "installable": True,
     "application": False,
     "auto_install": False,
 }
-
