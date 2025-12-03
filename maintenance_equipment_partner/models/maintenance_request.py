@@ -17,7 +17,6 @@ class MaintenanceRequest(models.Model):
             'maintenance_request_ids': [(4, self.id)],
             'partner_id': self.partner_id.id if self.partner_id else False,
             'equipment_id': self.equipment_id.id if self.equipment_id else False,
-            'name': self.name,
         })
         self.repair_order_id = repair.id
         return {
