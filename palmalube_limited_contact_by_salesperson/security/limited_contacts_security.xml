@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Seguridad para el módulo limited_contacts_by_salesperson
+        - Define un grupo de usuarios: "Contactos sólo propios" (grupo limitado para comerciales)
+        - Define una regla que limita res.partner al vendedor asignado (user_id == current user)
+        - Define una regla amplia para administradores y managers de ventas para asegurar que
+          no se vean afectados por la regla restrictiva.
+
+        Notas:
+        - El dominio [('user_id', '=', user.id)] hace que los usuarios de este grupo solo vean
+          los partners cuyo campo user_id coincide con el usuario conectado.
+        - Los partners sin user_id quedarán fuera de la vista para estos usuarios restringidos.
+        - Los administradores (base.group_system) y managers de ventas (sales_team.group_sale_manager)
+          tienen una regla que les permite acceder a todos los registros.
+    -->
+
+    <!-- Grupo específico para limitar contactos a los asignados al comercial -->
+    <record id="group_palmalube_limited_contacts_salesperson" model="res.groups">
+        <field name="name">Contactos sólo propios (Palmalube)</field>
+        <field name="category_id" ref="base.module_category_sales_management" />
+        <!-- Este campo es informativo; no definimos reglas aquí, las reglas se definen abajo -->
+    </record>
+
+    <!-- Regla abierta para administradores y managers de ventas: acceso total a res.partner -->
+    <record id="rule_palmalube_partner_all_admin_manager" model="ir.rule">
+        <field name="name">Palmalube: Acceso completo a partners para Admins/Managers</field>
+        <field name="model_id" ref="base.model_res_partner" />
+        <!-- Aplica solo a los grupos listados (admins y managers de ventas) -->
+        <field name="groups" eval="[(4, ref('base.group_system')), (4, ref('sales_team.group_sale_manager'))]"/>
+        <!-- Dominio que evalúa a True para todos los partners -->
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <!-- Concedemos permisos completos en esta regla para evitar que se combinen otras reglas restrictivas -->
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <!-- Regla restrictiva: usuarios del grupo limitado solo ven partners donde user_id == user.id -->
+    <record id="rule_palmalube_partner_limited_salesperson" model="ir.rule">
+        <field name="name">Palmalube: Sólo ver contactos propios (por user_id)</field>
+        <field name="model_id" ref="base.model_res_partner" />
+        <!-- Se aplica SOLO a este grupo -->
+        <field name="groups" eval="[(4, ref('limited_contacts_by_salesperson.group_palmalube_limited_contacts_salesperson'))]"/>
+        <!-- Dominio que restringe por el vendedor asignado (user_id) -->
+        <field name="domain_force">[('user_id','=', user.id)]</field>
+        <!-- Mínimo: permiso de lectura. Se conceden los demás permisos también porque suele ser práctico
+             que un comercial pueda crear/editar/borrar sus propios contactos; si se desea solo lectura,
+             poner perm_write/perm_create/perm_unlink a False. -->
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+</odoo>
+
