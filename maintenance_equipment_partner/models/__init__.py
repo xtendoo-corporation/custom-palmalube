@@ -2,5 +2,6 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from . import maintenance_equipment
+from . import maintenance_request
 from . import res_partner
-
+from . import repair_order
