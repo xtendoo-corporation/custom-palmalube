@@ -14,9 +14,10 @@
     'data': [
         'security/limited_contacts_security.xml',
         'security/ir.model.access.csv',
+        'views/res_users_view.xml',
     ],
     'installable': True,
     'application': False,
     'auto_install': False,
+    # Asegura que se cargue la carpeta models
 }
-

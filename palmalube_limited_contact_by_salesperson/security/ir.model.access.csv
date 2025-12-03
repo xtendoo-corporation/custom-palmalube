@@ -1,4 +1,2 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-# Acceso para el grupo limitado a res.partner
-access_res_partner_palmalube_limited,access_res_partner_palmalube_limited,model_res_partner,limited_contacts_by_salesperson.group_palmalube_limited_contacts_salesperson,1,1,1,1
-
+access_res_partner_palmalube_limited,access_res_partner_palmalube_limited,contacts.model_res_partner,palmalube_limited_contact_by_salesperson.group_palmalube_limited_contacts_salesperson,1,1,1,1

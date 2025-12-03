@@ -41,18 +41,15 @@
     <record id="rule_palmalube_partner_limited_salesperson" model="ir.rule">
         <field name="name">Palmalube: Sólo ver contactos propios (por user_id)</field>
         <field name="model_id" ref="base.model_res_partner" />
-        <!-- Se aplica SOLO a este grupo -->
-        <field name="groups" eval="[(4, ref('limited_contacts_by_salesperson.group_palmalube_limited_contacts_salesperson'))]"/>
+        <!-- Se aplica SOLO a este grupo, sin importar otros grupos -->
+        <field name="groups" eval="[(4, ref('palmalube_limited_contact_by_salesperson.group_palmalube_limited_contacts_salesperson'))]"/>
         <!-- Dominio que restringe por el vendedor asignado (user_id) -->
         <field name="domain_force">[('user_id','=', user.id)]</field>
-        <!-- Mínimo: permiso de lectura. Se conceden los demás permisos también porque suele ser práctico
-             que un comercial pueda crear/editar/borrar sus propios contactos; si se desea solo lectura,
-             poner perm_write/perm_create/perm_unlink a False. -->
+        <!-- Permisos: solo lectura, para máxima restricción -->
         <field name="perm_read" eval="True"/>
-        <field name="perm_write" eval="True"/>
-        <field name="perm_create" eval="True"/>
-        <field name="perm_unlink" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
     </record>
 
 </odoo>
-
