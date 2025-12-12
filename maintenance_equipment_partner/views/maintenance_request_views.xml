@@ -5,14 +5,33 @@
         <field name="model">maintenance.request</field>
         <field name="inherit_id" ref="maintenance.hr_equipment_request_view_form"/>
         <field name="arch" type="xml">
+            <!-- Add partner_id field -->
             <field name="equipment_id" position="before">
                 <field name="partner_id"/>
             </field>
+
+            <!-- Hide equipment_id field -->
+            <field name="equipment_id" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+
+            <!-- Add invisible helper fields and repair_order_id after equipment_id -->
             <field name="equipment_id" position="after">
+                <field name="equipment_ids" invisible="1"/>
+                <field name="equipment_count" invisible="1"/>
                 <field name="repair_order_id" options="{'no_create': True}"/>
             </field>
-            <field name="priority" position="before">
-            </field>
+
+            <!-- Add equipment lines in a notebook at the bottom of the sheet -->
+            <xpath expr="//sheet" position="inside">
+                <notebook>
+                    <page string="Equipos y Checklists" name="equipment_lines">
+                        <field name="equipment_line_ids" nolabel="1"/>
+                    </page>
+                </notebook>
+            </xpath>
+
+            <!-- Add header buttons -->
             <header position="inside">
                 <button name="action_create_repair_order" type="object" string="Crear Orden de Reparación"
                         class="oe_stat_button" icon="fa-wrench" invisible="repair_order_id"/>
@@ -27,9 +46,10 @@
         <field name="model">maintenance.request</field>
         <field name="inherit_id" ref="maintenance_request_repair.maintenance_request_form_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='repair_order_id']" position="replace"></xpath>
+            <xpath expr="//field[@name='repair_order_id']" position="replace"/>
         </field>
     </record>
+
     <!-- Vista heredada para repair.order -->
     <record id="repair_order_form_view_equipment" model="ir.ui.view">
         <field name="name">repair.order.form.equipment</field>

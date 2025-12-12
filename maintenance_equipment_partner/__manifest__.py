@@ -12,10 +12,13 @@
     "depends": [
         "maintenance",
         "repair",
+        "survey",
     ],
     "data": [
+        "security/ir.model.access.csv",
         "views/maintenance_equipment_views.xml",
         "views/res_partner_views.xml",
+        "views/maintenance_request_equipment_line_views.xml",
         "views/maintenance_request_views.xml",
     ],
     "installable": True,
