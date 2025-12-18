@@ -29,6 +29,13 @@ Este módulo añade una relación entre los equipos de mantenimiento y los clien
 * Campo con tracking para seguimiento de cambios
 * Añade el campo en las vistas formulario, árbol y búsqueda
 * Permite agrupar equipos por cliente en la vista de búsqueda
+* **Recordatorios automáticos de mantenimiento:**
+
+  * Envía automáticamente un correo electrónico al cliente 15 días antes de la fecha de mantenimiento programada
+  * Plantilla de correo personalizable con los detalles del mantenimiento
+  * Acción programada (cron) que se ejecuta diariamente
+  * Control para evitar enviar el mismo recordatorio múltiples veces
+  * Incluye información de todos los equipos asociados al mantenimiento
 
 **Table of contents**
 

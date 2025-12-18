@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import fields, models, api
+from datetime import timedelta
 
 class MaintenanceRequest(models.Model):
     _inherit = "maintenance.request"
@@ -25,6 +26,12 @@ class MaintenanceRequest(models.Model):
         string="Número de Equipos",
         compute="_compute_equipment_count",
         store=True,
+    )
+    reminder_sent = fields.Boolean(
+        string="Recordatorio Enviado",
+        default=False,
+        copy=False,
+        help="Indica si ya se envió el recordatorio de 15 días antes del mantenimiento"
     )
 
     @api.depends('equipment_line_ids')
@@ -91,3 +98,52 @@ class MaintenanceRequest(models.Model):
             'res_id': self.repair_order_id.id,
             'target': 'current',
         }
+
+    def _send_maintenance_reminder(self):
+        """Enviar recordatorio de mantenimiento al cliente."""
+        self.ensure_one()
+        if not self.partner_id or not self.partner_id.email:
+            return False
+
+        template = self.env.ref(
+            'maintenance_equipment_partner.email_template_maintenance_reminder',
+            raise_if_not_found=False
+        )
+        if template:
+            template.send_mail(self.id, force_send=True)
+            self.reminder_sent = True
+            return True
+        return False
+
+    @api.model
+    def _cron_send_maintenance_reminders(self):
+        """Acción programada para enviar recordatorios de mantenimiento."""
+        today = fields.Date.today()
+        reminder_date = today + timedelta(days=15)
+
+        # Buscar mantenimientos programados para dentro de 15 días
+        # que aún no han enviado recordatorio y tienen cliente asignado
+        maintenance_requests = self.search([
+            ('scheduled_date', '=', reminder_date),
+            ('reminder_sent', '=', False),
+            ('partner_id', '!=', False),
+            ('stage_id.done', '=', False),  # No enviar si ya está completado
+        ])
+
+        for request in maintenance_requests:
+            try:
+                request._send_maintenance_reminder()
+            except Exception as e:
+                # Log del error pero continuar con los demás
+                self.env['ir.logging'].sudo().create({
+                    'name': 'Maintenance Reminder Error',
+                    'type': 'server',
+                    'level': 'ERROR',
+                    'message': f'Error al enviar recordatorio para mantenimiento {request.id}: {str(e)}',
+                    'path': 'maintenance.request',
+                    'func': '_cron_send_maintenance_reminders',
+                })
+                continue
+
+        return True
+
