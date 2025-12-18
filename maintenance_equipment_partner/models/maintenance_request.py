@@ -3,6 +3,10 @@
 
 from odoo import fields, models, api
 from datetime import timedelta
+import logging
+
+_logger = logging.getLogger(__name__)
+
 
 class MaintenanceRequest(models.Model):
     _inherit = "maintenance.request"
@@ -136,14 +140,10 @@ class MaintenanceRequest(models.Model):
                 request._send_maintenance_reminder()
             except Exception as e:
                 # Log del error pero continuar con los demás
-                self.env['ir.logging'].sudo().create({
-                    'name': 'Maintenance Reminder Error',
-                    'type': 'server',
-                    'level': 'ERROR',
-                    'message': f'Error al enviar recordatorio para mantenimiento {request.id}: {str(e)}',
-                    'path': 'maintenance.request',
-                    'func': '_cron_send_maintenance_reminders',
-                })
+                _logger.error(
+                    'Error al enviar recordatorio para mantenimiento %s: %s',
+                    request.id, str(e)
+                )
                 continue
 
         return True
