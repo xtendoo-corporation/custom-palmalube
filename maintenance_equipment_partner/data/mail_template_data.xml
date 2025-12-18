@@ -5,7 +5,7 @@
         <record id="email_template_maintenance_reminder" model="mail.template">
             <field name="name">Recordatorio de Mantenimiento Programado</field>
             <field name="model_id" ref="maintenance.model_maintenance_request"/>
-            <field name="subject">Recordatorio: Mantenimiento programado para ${object.scheduled_date.strftime('%d/%m/%Y') if object.scheduled_date else ''}</field>
+            <field name="subject">Recordatorio: Mantenimiento programado para ${object.schedule_date.strftime('%d/%m/%Y') if object.schedule_date else ''}</field>
             <field name="email_from">${(object.company_id.email or user.email_formatted) | safe}</field>
             <field name="email_to">${object.partner_id.email | safe}</field>
             <field name="body_html" type="html">
@@ -26,7 +26,7 @@
                             <p>Le recordamos que tiene un mantenimiento programado para dentro de <strong>15 días</strong>.</p>
 
                             <div style="background-color: #f8f9fa; padding: 15px; border-left: 4px solid #875A7B; margin: 20px 0;">
-                                <p style="margin: 5px 0;"><strong>Fecha programada:</strong> ${object.scheduled_date.strftime('%d/%m/%Y') if object.scheduled_date else 'No especificada'}</p>
+                                <p style="margin: 5px 0;"><strong>Fecha programada:</strong> ${object.schedule_date.strftime('%d/%m/%Y') if object.schedule_date else 'No especificada'}</p>
                                 <p style="margin: 5px 0;"><strong>Solicitud:</strong> ${object.name}</p>
                                 % if object.equipment_id:
                                 <p style="margin: 5px 0;"><strong>Equipo:</strong> ${object.equipment_id.name}</p>

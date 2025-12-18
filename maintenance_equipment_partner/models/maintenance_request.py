@@ -124,7 +124,8 @@ class MaintenanceRequest(models.Model):
         # Buscar mantenimientos programados para dentro de 15 días
         # que aún no han enviado recordatorio y tienen cliente asignado
         maintenance_requests = self.search([
-            ('scheduled_date', '=', reminder_date),
+            ('schedule_date', '>=', fields.Datetime.to_datetime(reminder_date)),
+            ('schedule_date', '<', fields.Datetime.to_datetime(reminder_date + timedelta(days=1))),
             ('reminder_sent', '=', False),
             ('partner_id', '!=', False),
             ('stage_id.done', '=', False),  # No enviar si ya está completado
