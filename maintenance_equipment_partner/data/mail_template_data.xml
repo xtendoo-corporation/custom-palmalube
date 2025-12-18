@@ -71,7 +71,6 @@
 </div>
             </field>
             <field name="auto_delete" eval="False"/>
-            <field name="lang">{{ object.partner_id.lang }}</field>
         </record>
     </data>
 </odoo>
