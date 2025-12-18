@@ -21,6 +21,7 @@ class MaintenanceRequestEquipmentLine(models.Model):
         "maintenance.equipment",
         string="Equipo",
         required=True,
+        domain="[('customer_id', '=', parent.partner_id)]",
     )
 
     # Campos relacionados con la encuesta
