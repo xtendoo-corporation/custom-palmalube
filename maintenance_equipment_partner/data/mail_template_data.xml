@@ -26,9 +26,6 @@
                             <div style="background-color: #f8f9fa; padding: 15px; border-left: 4px solid #875A7B; margin: 20px 0;">
                                 <p style="margin: 5px 0;"><strong>Fecha programada:</strong> <t t-out="format_date(object.schedule_date) if object.schedule_date else 'No especificada'">01/01/2025</t></p>
                                 <p style="margin: 5px 0;"><strong>Solicitud:</strong> <t t-out="object.name or ''">Mantenimiento</t></p>
-                                <t t-if="object.equipment_id">
-                                    <p style="margin: 5px 0;"><strong>Equipo:</strong> <t t-out="object.equipment_id.name or ''">Equipo</t></p>
-                                </t>
                                 <t t-if="object.equipment_line_ids">
                                     <p style="margin: 5px 0;"><strong>Equipos a mantener:</strong></p>
                                     <ul style="margin: 5px 0; padding-left: 20px;">
