@@ -3,7 +3,7 @@
 
 {
     "name": "Palmalube Maintenance Survey",
-    "version": "18.0.1.0.0",
+    "version": "18.0.1.1.0",
     "category": "Maintenance",
     "summary": "Link maintenance requests with surveys for post-service quality control",
     "author": "Palmalube",
@@ -16,7 +16,7 @@
     ],
     "data": [
         "security/ir.model.access.csv",
-        "views/maintenance_request_views.xml",
+        # "views/maintenance_request_views.xml",
         "views/maintenance_stage_views.xml",
         "views/maintenance_equipment_views.xml",
         "data/maintenance_survey_demo.xml",

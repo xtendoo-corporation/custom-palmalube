@@ -14,13 +14,9 @@ class SurveyUserInput(models.Model):
         help="Maintenance request linked to this survey response",
     )
 
-    _sql_constraints = [
-        (
-            "maintenance_request_survey_unique",
-            "unique(maintenance_request_id, survey_id)",
-            "Solo puede existir una respuesta de encuesta por solicitud de mantenimiento y encuesta.",
-        ),
-    ]
+    # NOTA: Se eliminó la restricción SQL 'maintenance_request_survey_unique'
+    # porque ahora permitimos múltiples encuestas del mismo tipo en un mantenimiento
+    # (una por cada línea de equipo)
 
     def write(self, vals):
         """Sync survey state to maintenance request when completed."""
@@ -38,6 +34,11 @@ class SurveyUserInput(models.Model):
                         body="Encuesta completada por %s" % self.env.user.name,
                         message_type="notification",
                     )
+
+        # Si el registro está vinculado y se marca como completado, asegurar el vínculo
+        for user_input in self.filtered('maintenance_request_id'):
+            if user_input.maintenance_request_id.survey_user_input_id != user_input:
+                user_input.maintenance_request_id.sudo().write({'survey_user_input_id': user_input.id})
 
         return res
 
@@ -69,7 +70,9 @@ class SurveyUserInput(models.Model):
     def create(self, vals):
         survey_id = vals.get('survey_id')
         maintenance_request_id = vals.get('maintenance_request_id')
+        maintenance_request_equipment_line_id = vals.get('maintenance_request_equipment_line_id')
         ctx = self.env.context
+
         # Si no hay maintenance_request_id, intentar vincularlo por contexto o por búsqueda
         if not maintenance_request_id:
             # Intentar contexto
@@ -86,24 +89,29 @@ class SurveyUserInput(models.Model):
                 if request:
                     vals['maintenance_request_id'] = request.id
                     maintenance_request_id = request.id
+
         # Si existe un registro para la combinación, reutilizarlo
+        # IMPORTANTE: Si hay maintenance_request_equipment_line_id, verificarlo también
+        # para que cada línea tenga su propia encuesta independiente
         if survey_id and maintenance_request_id:
-            existing = self.env['survey.user_input'].search([
+            domain = [
                 ('survey_id', '=', survey_id),
                 ('maintenance_request_id', '=', maintenance_request_id)
-            ], limit=1)
+            ]
+            # Si es de una línea específica, buscar solo esa combinación
+            if maintenance_request_equipment_line_id:
+                domain.append(('maintenance_request_equipment_line_id', '=', maintenance_request_equipment_line_id))
+            else:
+                # Si no es de una línea, asegurar que no tenga línea asociada
+                domain.append(('maintenance_request_equipment_line_id', '=', False))
+
+            existing = self.env['survey.user_input'].search(domain, limit=1)
             if existing:
                 existing.sudo().write(vals)
                 return existing
+
         record = super().create(vals)
         if record.maintenance_request_id:
             record.maintenance_request_id.sudo().write({'survey_user_input_id': record.id})
         return record
 
-    def write(self, vals):
-        res = super().write(vals)
-        # Si el registro está vinculado y se marca como completado, asegurar el vínculo
-        for user_input in self.filtered('maintenance_request_id'):
-            if user_input.maintenance_request_id.survey_user_input_id != user_input:
-                user_input.maintenance_request_id.sudo().write({'survey_user_input_id': user_input.id})
-        return res

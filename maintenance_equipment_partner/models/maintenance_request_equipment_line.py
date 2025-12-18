@@ -85,6 +85,20 @@ class MaintenanceRequestEquipmentLine(models.Model):
         if not self.survey_id:
             raise UserError(_("No hay encuesta asignada a este equipo."))
 
+        # Obtener el partner del usuario actual
+        # Si el usuario está logueado (no es público), SIEMPRE usar su partner_id
+        # para evitar el error 'answer_wrong_user'
+        current_user = self.env.user
+        if not current_user._is_public():
+            partner_id = current_user.partner_id.id
+        else:
+            # Usuario público: intentar obtener de la solicitud
+            partner_id = False
+            if self.request_id.user_id and self.request_id.user_id.partner_id:
+                partner_id = self.request_id.user_id.partner_id.id
+            elif self.request_id.owner_user_id and self.request_id.owner_user_id.partner_id:
+                partner_id = self.request_id.owner_user_id.partner_id.id
+
         # Buscar o crear el registro de respuesta
         user_input = self.env["survey.user_input"].search([
             ("survey_id", "=", self.survey_id.id),
@@ -92,29 +106,23 @@ class MaintenanceRequestEquipmentLine(models.Model):
         ], limit=1)
 
         if not user_input:
-            partner_id = False
-            if self.request_id.user_id:
-                partner_id = self.request_id.user_id.partner_id.id
-            elif self.request_id.owner_user_id:
-                partner_id = self.request_id.owner_user_id.partner_id.id
-
-            user_input = self.env["survey.user_input"].create({
+            user_input = self.env["survey.user_input"].sudo().create({
                 "survey_id": self.survey_id.id,
                 "partner_id": partner_id,
                 "maintenance_request_id": self.request_id.id,
                 "maintenance_request_equipment_line_id": self.id,
             })
+        else:
+            # Si ya existe, actualizar el partner_id para que coincida con el usuario actual
+            if user_input.partner_id.id != partner_id:
+                user_input.sudo().write({'partner_id': partner_id})
 
         # Siempre asignar el user_input a la línea
         if self.survey_user_input_id != user_input:
-            self.survey_user_input_id = user_input.id
+            self.write({'survey_user_input_id': user_input.id})
 
-        # Abrir la encuesta
-        return self.survey_id.with_context(
-            active_id=self.id,
-            active_model="maintenance.request.equipment.line",
-            user_input_id=user_input.id,
-        ).action_start_survey()
+        # Abrir la encuesta pasando el answer correctamente
+        return self.survey_id.action_start_survey(answer=user_input)
 
     def action_view_survey_result(self):
         """Ver el resultado de la encuesta de este equipo."""

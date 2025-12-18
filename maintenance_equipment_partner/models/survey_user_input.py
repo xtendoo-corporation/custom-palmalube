@@ -1,7 +1,7 @@
 # Copyright 2025 Ivan Parrado, Manuel Calero, Xtendoo SLU
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import fields, models, api
+from odoo import fields, models, api, _
 
 
 class SurveyUserInput(models.Model):
@@ -26,10 +26,14 @@ class SurveyUserInput(models.Model):
             # Obtener las líneas de equipo vinculadas
             lines = self.filtered(lambda r: r.maintenance_request_equipment_line_id).mapped('maintenance_request_equipment_line_id')
             if lines:
-                # Invalidar caché y forzar recomputación
-                self.env.add_to_compute(
-                    self.env['maintenance.request.equipment.line']._fields['survey_state'],
-                    lines
-                )
+                # Forzar recomputación del campo survey_state
+                lines._compute_survey_state()
+                # Publicar mensaje si se completó
+                if vals['state'] == 'done':
+                    for line in lines:
+                        line.request_id.message_post(
+                            body=_("Encuesta completada para el equipo: %s") % line.equipment_id.name,
+                            message_type="notification",
+                        )
         return result
 

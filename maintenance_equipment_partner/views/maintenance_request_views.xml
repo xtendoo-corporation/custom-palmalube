@@ -22,13 +22,12 @@
                 <field name="repair_order_id" options="{'no_create': True}"/>
             </field>
 
-            <!-- Add equipment lines in a notebook at the bottom of the sheet -->
-            <xpath expr="//sheet" position="inside">
-                <notebook>
+            <!-- Add equipment lines page before <page string="Notes">-->
+            <xpath expr="//notebook/page[1]" position="before">
                     <page string="Equipos y Checklists" name="equipment_lines">
                         <field name="equipment_line_ids" nolabel="1"/>
                     </page>
-                </notebook>
+
             </xpath>
 
             <!-- Add header buttons -->
