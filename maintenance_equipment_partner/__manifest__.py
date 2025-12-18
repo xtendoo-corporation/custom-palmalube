@@ -4,7 +4,7 @@
 {
     "name": "Maintenance Equipment Partner",
     "summary": "Añade relación con cliente en equipos de mantenimiento",
-    "version": "18.0.2.18.0",
+    "version": "18.0.2.22.0",
     "category": "Maintenance",
     "website": "https://github.com/xtendoo-corporation/custom-palmalube",
     "author": "Ivan Parrado, Manuel Calero, Abraham Carrasco Xtendoo SLU",
