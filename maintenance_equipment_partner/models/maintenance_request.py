@@ -106,7 +106,18 @@ class MaintenanceRequest(models.Model):
     def _send_maintenance_reminder(self):
         """Enviar recordatorio de mantenimiento al cliente."""
         self.ensure_one()
-        if not self.partner_id or not self.partner_id.email:
+        if not self.partner_id:
+            _logger.warning(
+                'No se puede enviar recordatorio para mantenimiento %s: No tiene cliente asignado',
+                self.id
+            )
+            return False
+
+        if not self.partner_id.email:
+            _logger.warning(
+                'No se puede enviar recordatorio para mantenimiento %s: El cliente %s no tiene email',
+                self.id, self.partner_id.name
+            )
             return False
 
         template = self.env.ref(
@@ -114,10 +125,26 @@ class MaintenanceRequest(models.Model):
             raise_if_not_found=False
         )
         if template:
-            template.send_mail(self.id, force_send=True)
-            self.reminder_sent = True
-            return True
-        return False
+            try:
+                template.send_mail(self.id, force_send=True)
+                self.reminder_sent = True
+                _logger.info(
+                    'Recordatorio enviado correctamente para mantenimiento %s a %s (%s)',
+                    self.id, self.partner_id.name, self.partner_id.email
+                )
+                return True
+            except Exception as e:
+                _logger.error(
+                    'Error al enviar email para mantenimiento %s: %s',
+                    self.id, str(e)
+                )
+                return False
+        else:
+            _logger.error(
+                'No se encontró la plantilla de email para mantenimiento %s',
+                self.id
+            )
+            return False
 
     @api.model
     def _cron_send_maintenance_reminders(self):
