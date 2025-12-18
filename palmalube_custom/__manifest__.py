@@ -3,17 +3,19 @@
 
 {
     "name": "Palmalube Custom",
-    "summary": "Quitamos el wizard al cancelar pedidos de venta",
-    "version": "18.0.0.0.0",
+    "summary": "Customizaciones para Palmalube: cancelar pedidos sin wizard e importar cuentas bancarias",
+    "version": "18.0.1.0.0",
     "category": "Sales",
     "website": "https://github.com/xtendoo-corporation/custom-palmalube",
     "author": "Ivan Parrado, Manuel Calero, Abraham Carrasco Xtendoo SLU",
     "license": "AGPL-3",
     "depends": [
         "sale",
+        "contacts",
     ],
     "data": [
-
+        "security/ir.model.access.csv",
+        "wizard/partner_bank_import_wizard_view.xml",
     ],
     "installable": True,
     "application": False,

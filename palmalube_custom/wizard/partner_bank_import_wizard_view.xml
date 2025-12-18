@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="partner_bank_import_wizard_form" model="ir.ui.view">
+        <field name="name">partner.bank.import.wizard.form</field>
+        <field name="model">partner.bank.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Importar Cuentas Bancarias">
+                <field name="state" invisible="1"/>
+                <group invisible="state == 'done'">
+                    <group>
+                        <field name="file" filename="filename"/>
+                        <field name="filename" invisible="1"/>
+                    </group>
+                    <group>
+                        <div class="oe_grey">
+                            <p>
+                                <strong>Formato del archivo Excel:</strong>
+                            </p>
+                            <ul>
+                                <li><strong>ID_CLIENTE:</strong> Referencia del cliente en Odoo (campo 'ref')</li>
+                                <li><strong>RAZON_SOCIAL:</strong> Nombre del cliente (informativo)</li>
+                                <li><strong>IBAN:</strong> Número de cuenta bancaria (IBAN)</li>
+                            </ul>
+                            <p>
+                                <i>Nota: El archivo debe ser .xlsx (Excel). Las columnas adicionales serán ignoradas.</i>
+                            </p>
+                        </div>
+                    </group>
+                </group>
+
+                <group invisible="state != 'done'">
+                    <group>
+                        <field name="total_lines" readonly="1"/>
+                        <field name="created_count" readonly="1"/>
+                        <field name="updated_count" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="skipped_count" readonly="1"/>
+                        <field name="error_count" readonly="1"/>
+                    </group>
+                    <group colspan="2">
+                        <field name="log_text" readonly="1" widget="text" nolabel="1"/>
+                    </group>
+                </group>
+
+                <footer>
+                    <button string="Importar"
+                            name="action_import"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state == 'done'"/>
+                    <button string="Cerrar"
+                            name="action_close"
+                            type="object"
+                            class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_partner_bank_import_wizard" model="ir.actions.act_window">
+        <field name="name">Importar Cuentas Bancarias</field>
+        <field name="res_model">partner.bank.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_partner_bank_import"
+              name="Importar Cuentas Bancarias"
+              parent="contacts.res_partner_menu_config"
+              action="action_partner_bank_import_wizard"
+              sequence="100"/>
+</odoo>
+
