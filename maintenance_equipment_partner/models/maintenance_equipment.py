@@ -3,7 +3,6 @@
 
 from odoo import fields, models
 
-
 class MaintenanceEquipment(models.Model):
     _inherit = "maintenance.equipment"
 
@@ -27,7 +26,6 @@ class MaintenanceEquipment(models.Model):
         tracking=True,
     )
 
-
     year_manufacture = fields.Integer(
         string="Año de Fabricación",
         help="Año de fabricación del equipo",
@@ -46,5 +44,18 @@ class MaintenanceEquipment(models.Model):
         help="Descripción detallada del equipo",
         tracking=True,
     )
-
-
+    image_1920 = fields.Image(
+        string="Imagen",
+        help="Imagen del equipo de mantenimiento",
+        max_width=1920,
+        max_height=1920,
+    )
+    images_ids = fields.One2many(
+        comodel_name='maintenance.equipment.image',
+        inverse_name='equipment_id',
+        string='Imágenes adicionales',
+    )
+    id_equipment = fields.Char(
+        string="ID Equipo",
+        help="Identificador único del equipo",
+    )
