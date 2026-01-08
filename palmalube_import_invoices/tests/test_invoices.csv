@@ -1,0 +1,8 @@
+move_type,name,invoice_date,partner_name,amount_untaxed,amount_tax,amount_total,state,currency_id
+out_invoice,ST001,2025-12-30,RYME WORLDWIDE, S.A.,221.50,0.00,221.50,draft,EUR
+out_invoice,ST002,2025-12-30,"S.P. AUTO REISEN, S.L.",547.40,38.32,585.72,draft,EUR
+out_invoice,ST003,2025-12-30,AUTOMOVILES Y TRACTORES, SOCIEDAD ANONIMA,500.00,105.00,605.00,draft,EUR
+out_invoice,ST004,2025-12-30,Proveedor Test SL,100.00,21.00,121.00,draft,EUR
+out_invoice,ST005,2025-12-30,Compañía de Suministros,1000.00,210.00,1210.00,draft,EUR
+out_invoice,ST006,2025-12-30,Abono Test,-150.00,-31.50,-181.50,draft,EUR
+
