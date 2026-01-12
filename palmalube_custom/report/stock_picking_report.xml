@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2025 Ivan Parrado, Manuel Calero, Xtendoo SLU -->
+<!-- License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <!-- Heredar el reporte del albarán para añadir el texto "Albarán" -->
+    <template id="report_delivery_document_inherit_palmalube" inherit_id="stock.report_delivery_document">
+        <!-- Añadir "Albarán" en el título del documento -->
+        <xpath expr="//h2" position="replace">
+            <h2>
+                <span t-if="o.picking_type_id.code == 'outgoing'">Albarán</span>
+                <span t-else="">
+                    <span t-if="o.picking_type_id.code == 'incoming'">Recepción</span>
+                    <span t-elif="o.picking_type_id.code == 'internal'">Transferencia interna</span>
+                    <span t-else="">Transfer</span>
+                </span>
+                <span t-field="o.name"/>
+            </h2>
+        </xpath>
+    </template>
+</odoo>
+

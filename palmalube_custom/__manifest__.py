@@ -12,10 +12,12 @@
     "depends": [
         "sale",
         "contacts",
+        "stock",
     ],
     "data": [
         "security/ir.model.access.csv",
         "wizard/partner_bank_import_wizard_view.xml",
+        "report/stock_picking_report.xml",
     ],
     "installable": True,
     "application": False,
