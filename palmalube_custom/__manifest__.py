@@ -18,6 +18,8 @@
         "security/ir.model.access.csv",
         "wizard/partner_bank_import_wizard_view.xml",
         "report/stock_picking_report.xml",
+        "report/saleorder_albaran_report.xml",
+        "report/saleorder_albaran_action.xml",
     ],
     "installable": True,
     "application": False,
