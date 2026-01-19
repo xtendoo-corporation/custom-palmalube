@@ -76,11 +76,11 @@ class MaintenanceRequest(models.Model):
     def action_create_repair_order(self):
         self.ensure_one()
         # Si hay múltiples equipos, tomar el primero para la orden de reparación
-        equipment_id = self.equipment_ids[0].id if self.equipment_ids else (self.equipment_id.id if self.equipment_id else False)
+        equipment_ids = self.equipment_ids.ids if self.equipment_ids else []
         repair = self.env['repair.order'].create({
             'maintenance_request_ids': [(4, self.id)],
             'partner_id': self.partner_id.id if self.partner_id else False,
-            'equipment_id': equipment_id,
+            'equipment_ids': [(6, 0, equipment_ids)],
         })
         self.repair_order_id = repair.id
         return {
