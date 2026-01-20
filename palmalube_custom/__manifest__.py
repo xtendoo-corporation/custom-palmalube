@@ -20,6 +20,8 @@
         "report/stock_picking_report.xml",
         "report/saleorder_albaran_report.xml",
         "report/saleorder_albaran_action.xml",
+        "views/account_payment_views.xml",
+        "actions/account_payment_update_comercial_from_chatter.xml",
     ],
     "installable": True,
     "application": False,

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_account_payment_form_inherit_comercial" model="ir.ui.view">
+        <field name="name">account.payment.form.inherit.comercial</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_bank_id']" position="after">
+                <field name="comercial_id" readonly="1" string="Comercial"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_account_payment_filter_inherit_comercial" model="ir.ui.view">
+        <field name="name">account.payment.search.inherit.comercial</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="/search" position="inside">
+                <filter name="comercial_id" string="Comercial" domain="[]" context="{'group_by':'comercial_id'}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
