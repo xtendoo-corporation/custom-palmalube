@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Herencia de la vista de formulario de factura para mostrar columnas en las líneas de factura -->
+    <record id="view_move_form_inherit_equipo_intervencion" model="ir.ui.view">
+        <field name="name">account.move.form.inherit.equipos.intervencion</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='invoice_line_ids']/list" position="inside">
+                <field name="equipo_ids" widget="many2many_tags"/>
+                <field name="intervencion"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

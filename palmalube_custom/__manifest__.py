@@ -13,6 +13,7 @@
         "sale",
         "contacts",
         "stock",
+        "repair",
     ],
     "data": [
         "security/ir.model.access.csv",
@@ -21,6 +22,8 @@
         "report/saleorder_albaran_report.xml",
         "report/saleorder_albaran_action.xml",
         "views/account_payment_views.xml",
+        "views/sale_order_line_views.xml",
+        "views/account_move_line_views.xml",
         "actions/account_payment_update_comercial_from_chatter.xml",
     ],
     "installable": True,
