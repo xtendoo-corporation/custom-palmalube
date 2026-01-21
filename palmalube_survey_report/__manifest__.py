@@ -12,6 +12,7 @@
     "depends": [
         "survey",
         "web",
+        "palmalube_maintenance_survey",
     ],
     "data": [
         "report/survey_user_input_report.xml",
@@ -21,4 +22,3 @@
     "application": False,
     "auto_install": False,
 }
-

@@ -32,6 +32,11 @@
                                 <div class="col-6">
                                     <strong>Fecha:</strong>
                                     <span t-field="o.create_date" t-options='{"widget": "datetime"}'/>
+                                    <t t-if="o.date_next_revision">
+                                    <br/>
+                                        <strong>Fecha próxima revisión:</strong>
+                                        <span t-field="o.date_next_revision" t-options='{"widget": "date"}'/>
+                                    </t>
                                 </div>
                             </div>
 
@@ -107,6 +112,10 @@
                                         </t>
                                     </div>
                                 </div>
+                            </div>
+                            <div t-if="o.signature">
+                                <strong>Firma del técnico:</strong>
+                                <img t-att-src="image_data_uri(o.signature)" style="max-height: 4cm; max-width: 8cm;"/>
                             </div>
                         </div>
                     </t>

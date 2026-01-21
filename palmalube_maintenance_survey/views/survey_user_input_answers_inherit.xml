@@ -8,6 +8,15 @@
             <xpath expr="//field[@name='user_input_line_ids']/list/field[@name='answer_score']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
+            <xpath expr="//field[@name='create_date']" position="after">
+                <field name="date_next_revision"/>
+            </xpath>
+            <xpath expr="//field[@name='access_token']" position="after">
+               <field name="signature" widget="image"/>
+            </xpath>
+            <xpath expr="//button[@name='action_print_answers']" position="after">
+                <widget name="signature" string="Firmar" highlight="1"/>
+            </xpath>
         </field>
     </record>
 </odoo>

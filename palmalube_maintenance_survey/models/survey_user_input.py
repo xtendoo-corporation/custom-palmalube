@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import fields, models
+from odoo import fields, models, api
 
 
 class SurveyUserInput(models.Model):
@@ -13,6 +13,9 @@ class SurveyUserInput(models.Model):
         ondelete="cascade",
         help="Maintenance request linked to this survey response",
     )
+
+    date_next_revision = fields.Date(string='Próxima Revisión')
+    signature = fields.Image(string='Firma del técnico', attachment=True)
 
     # NOTA: Se eliminó la restricción SQL 'maintenance_request_survey_unique'
     # porque ahora permitimos múltiples encuestas del mismo tipo en un mantenimiento
@@ -115,3 +118,14 @@ class SurveyUserInput(models.Model):
             record.maintenance_request_id.sudo().write({'survey_user_input_id': record.id})
         return record
 
+    def action_print_answers(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.report',
+            'report_name': 'palmalube_survey_report.report_survey_user_input_table',
+            # Debe coincidir con el id del reporte en el XML
+            'report_type': 'qweb-pdf',  # o 'qweb-html' si quieres HTML
+            'res_id': self.id,
+            'res_model': 'survey.user_input',
+            'name': "Resultados de la Encuesta",
+        }

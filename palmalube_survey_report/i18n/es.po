@@ -1,0 +1,90 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* palmalube_survey_report
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-21 07:22+0000\n"
+"PO-Revision-Date: 2026-01-21 07:22+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: palmalube_survey_report
+#: model:ir.actions.report,print_report_name:palmalube_survey_report.action_report_survey_user_input
+msgid "'Survey Responses - %s' % (object.survey_id.title)"
+msgstr "'Respuestas de la encuesta - %s' % (object.survey_id.title)"
+
+#. module: palmalube_survey_report
+#: model_terms:ir.ui.view,arch_db:palmalube_survey_report.report_survey_user_input_table
+msgid ""
+"<br/>\n"
+"                                        <strong>Fecha próxima revisión:</strong>"
+msgstr ""
+
+#. module: palmalube_survey_report
+#: model_terms:ir.ui.view,arch_db:palmalube_survey_report.report_survey_user_input_table
+msgid ""
+"<br/>\n"
+"                                    <strong>Equipo:</strong>"
+msgstr ""
+
+#. module: palmalube_survey_report
+#: model_terms:ir.ui.view,arch_db:palmalube_survey_report.report_survey_user_input_table
+msgid "<strong>Descripción:</strong>"
+msgstr ""
+
+#. module: palmalube_survey_report
+#: model_terms:ir.ui.view,arch_db:palmalube_survey_report.report_survey_user_input_table
+msgid "<strong>Fecha:</strong>"
+msgstr ""
+
+#. module: palmalube_survey_report
+#: model_terms:ir.ui.view,arch_db:palmalube_survey_report.report_survey_user_input_table
+msgid "<strong>Puntuación:</strong>"
+msgstr ""
+
+#. module: palmalube_survey_report
+#: model_terms:ir.ui.view,arch_db:palmalube_survey_report.report_survey_user_input_table
+msgid "<strong>Usuario:</strong>"
+msgstr ""
+
+#. module: palmalube_survey_report
+#: model_terms:ir.ui.view,arch_db:palmalube_survey_report.report_survey_user_input_table
+msgid "BIEN"
+msgstr ""
+
+#. module: palmalube_survey_report
+#: model_terms:ir.ui.view,arch_db:palmalube_survey_report.report_survey_user_input_table
+msgid "MAL"
+msgstr ""
+
+#. module: palmalube_survey_report
+#: model_terms:ir.ui.view,arch_db:palmalube_survey_report.report_survey_user_input_table
+msgid "No disponible"
+msgstr ""
+
+#. module: palmalube_survey_report
+#: model_terms:ir.ui.view,arch_db:palmalube_survey_report.report_survey_user_input_table
+msgid "Pregunta"
+msgstr ""
+
+#. module: palmalube_survey_report
+#: model_terms:ir.ui.view,arch_db:palmalube_survey_report.report_survey_user_input_table
+msgid "Respuestas"
+msgstr ""
+
+#. module: palmalube_survey_report
+#: model:ir.actions.report,name:palmalube_survey_report.action_report_survey_user_input
+msgid "Survey Responses Table"
+msgstr ""
+
+#. module: palmalube_survey_report
+#: model_terms:ir.ui.view,arch_db:palmalube_survey_report.report_survey_user_input_table
+msgid "VALOR"
+msgstr ""
