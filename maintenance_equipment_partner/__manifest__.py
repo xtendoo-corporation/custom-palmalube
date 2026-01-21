@@ -13,6 +13,7 @@
         "maintenance",
         "repair",
         "survey",
+        "xtendoo_fsm",
     ],
     "data": [
         "security/ir.model.access.csv",

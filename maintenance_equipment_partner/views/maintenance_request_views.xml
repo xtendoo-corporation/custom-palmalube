@@ -19,7 +19,7 @@
             <field name="equipment_id" position="after">
                 <field name="equipment_ids" invisible="1"/>
                 <field name="equipment_count" invisible="1"/>
-                <field name="repair_order_id" options="{'no_create': True}"/>
+                <field name="fsm_order_id" options="{'no_create': True}"/>
             </field>
 
             <!-- Add equipment lines page before <page string="Notes">-->
@@ -30,12 +30,11 @@
 
             </xpath>
 
-            <!-- Add header buttons -->
             <header position="inside">
-                <button name="action_create_repair_order" type="object" string="Crear Orden de Reparación"
-                        class="oe_stat_button" icon="fa-wrench" invisible="repair_order_id"/>
-                <button name="action_open_repair_order" type="object" string="Ver Orden de Reparación"
-                        class="oe_stat_button" icon="fa-external-link" invisible="not repair_order_id"/>
+                <button name="action_create_fsm_order" type="object" string="Crear Orden FSM"
+                        class="oe_stat_button" icon="fa-wrench" invisible="fsm_order_id"/>
+                <button name="action_open_fsm_order" type="object" string="Ver Orden FSM"
+                        class="oe_stat_button" icon="fa-external-link" invisible="not fsm_order_id"/>
             </header>
         </field>
     </record>

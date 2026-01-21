@@ -8,6 +8,15 @@
             <xpath expr="//field[@name='description']" position="before">
                 <field name="equipment_ids" widget="many2many_tags"/>
             </xpath>
+            <xpath expr="//button[@name='action_create_repair']" position="replace"/>
+            <xpath expr="//button[@name='action_create_sale_order']" position="replace">
+                <button name="action_create_sale_order" string="Crear Orden de Venta"
+                        type="object" class="btn-secondary"
+                        invisible="sale_order_ids"/>
+                <button name="action_open_sale_order" string="Ver Orden de Venta"
+                        type="object" class="btn-primary"
+                        invisible="not sale_order_ids"/>
+            </xpath>
         </field>
     </record>
 </odoo>

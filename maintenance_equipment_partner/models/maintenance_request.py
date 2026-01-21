@@ -11,7 +11,7 @@ _logger = logging.getLogger(__name__)
 class MaintenanceRequest(models.Model):
     _inherit = "maintenance.request"
 
-    repair_order_id = fields.Many2one("repair.order", "Orden de reparación")
+    # repair_order_id = fields.Many2one("repair.order", "Orden de reparación")
     partner_id = fields.Many2one(
         "res.partner", string="Cliente",
         help="Cliente al que se le realiza el mantenimiento.")
@@ -37,6 +37,11 @@ class MaintenanceRequest(models.Model):
         copy=False,
         help="Indica si ya se envió el recordatorio de 15 días antes del mantenimiento"
     )
+    fsm_order_id = fields.Many2one(
+        'fsm.order',
+        string='Orden FSM'
+    )
+
 
     @api.depends('equipment_line_ids')
     def _compute_equipment_count(self):
@@ -73,35 +78,64 @@ class MaintenanceRequest(models.Model):
             self.equipment_ids = [(5, 0, 0)]
             self.equipment_id = False
 
-    def action_create_repair_order(self):
-        self.ensure_one()
-        # Si hay múltiples equipos, tomar el primero para la orden de reparación
-        equipment_ids = self.equipment_ids.ids if self.equipment_ids else []
-        repair = self.env['repair.order'].create({
-            'maintenance_request_ids': [(4, self.id)],
-            'partner_id': self.partner_id.id if self.partner_id else False,
-            'equipment_ids': [(6, 0, equipment_ids)],
-        })
-        self.repair_order_id = repair.id
-        return {
-            'type': 'ir.actions.act_window',
-            'res_model': 'repair.order',
-            'view_mode': 'form',
-            'res_id': repair.id,
-            'target': 'current',
-        }
+    # def action_create_repair_order(self):
+    #     self.ensure_one()
+    #     # Si hay múltiples equipos, tomar el primero para la orden de reparación
+    #     equipment_ids = self.equipment_ids.ids if self.equipment_ids else []
+    #     repair = self.env['repair.order'].create({
+    #         'maintenance_request_ids': [(4, self.id)],
+    #         'partner_id': self.partner_id.id if self.partner_id else False,
+    #         'equipment_ids': [(6, 0, equipment_ids)],
+    #     })
+    #     self.repair_order_id = repair.id
+    #     return {
+    #         'type': 'ir.actions.act_window',
+    #         'res_model': 'repair.order',
+    #         'view_mode': 'form',
+    #         'res_id': repair.id,
+    #         'target': 'current',
+    #     }
+    #
+    # def action_open_repair_order(self):
+    #     self.ensure_one()
+    #     if not self.repair_order_id:
+    #         return False
+    #     return {
+    #         'type': 'ir.actions.act_window',
+    #         'res_model': 'repair.order',
+    #         'view_mode': 'form',
+    #         'res_id': self.repair_order_id.id,
+    #         'target': 'current',
+    #     }
+    def action_create_fsm_order(self):
+        for rec in self:
+            # Usar description si existe, si no usar name
+            description = rec.description if hasattr(rec, 'description') and rec.description else rec.name
+            # Obtener los equipos asociados
+            equipment_ids = rec.equipment_ids.ids if rec.equipment_ids else []
+            fsm_order = self.env['fsm.order'].create({
+                'partner_id': rec.partner_id.id,
+                'description': description or 'Orden FSM generada desde mantenimiento',
+                'equipment_ids': [(6, 0, equipment_ids)],  # Añadir equipos a la orden FSM
+            })
+            rec.fsm_order_id = fsm_order.id
+            return {
+                'type': 'ir.actions.act_window',
+                'res_model': 'fsm.order',
+                'view_mode': 'form',
+                'res_id': fsm_order.id,
+                'target': 'current',
+            }
 
-    def action_open_repair_order(self):
-        self.ensure_one()
-        if not self.repair_order_id:
-            return False
-        return {
-            'type': 'ir.actions.act_window',
-            'res_model': 'repair.order',
-            'view_mode': 'form',
-            'res_id': self.repair_order_id.id,
-            'target': 'current',
-        }
+    def action_open_fsm_order(self):
+        for rec in self:
+            return {
+                'type': 'ir.actions.act_window',
+                'res_model': 'fsm.order',
+                'view_mode': 'form',
+                'res_id': rec.fsm_order_id.id,
+                'target': 'current',
+            }
 
     def _send_maintenance_reminder(self):
         """Enviar recordatorio de mantenimiento al cliente."""
