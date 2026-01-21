@@ -17,6 +17,7 @@
     ],
     "data": [
         "security/ir.model.access.csv",
+        "security/account_payment_rules.xml",  # Añadida regla para comerciales
         "wizard/partner_bank_import_wizard_view.xml",
         "report/stock_picking_report.xml",
         "report/saleorder_albaran_report.xml",

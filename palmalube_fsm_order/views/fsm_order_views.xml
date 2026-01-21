@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_fsm_order_form_inherit_equipment" model="ir.ui.view">
+        <field name="name">fsm.order.form.inherit.equipment</field>
+        <field name="model">fsm.order</field>
+        <field name="inherit_id" ref="xtendoo_fsm.view_xtendoo_fsm_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='description']" position="before">
+                <field name="equipment_ids" widget="many2many_tags"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
