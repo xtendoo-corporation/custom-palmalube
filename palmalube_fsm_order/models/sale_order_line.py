@@ -32,6 +32,11 @@ class SaleOrderLine(models.Model):
                     res['intervencion'] = _strip_html(text)
         return res
 
+    def _has_fsm_origin(self):
+        # Devuelve True si la orden de venta está originada de un fsm.order
+        self.ensure_one()
+        return bool(self.order_id and getattr(self.order_id, 'fsm_order_id', False))
+
     @api.onchange('order_id')
     def _onchange_order_id_fill_fsm(self):
         for line in self:
@@ -48,3 +53,12 @@ class SaleOrderLine(models.Model):
             if not line.intervencion:
                 text = fsm.internal_notes if getattr(fsm, 'internal_notes', False) else getattr(fsm, 'description', '')
                 line.intervencion = _strip_html(text)
+            # Si la venta viene de fsm_order, no aplicar descuentos globales ni del partner
+            if line._has_fsm_origin():
+                line.discount = 0.0
+
+    @api.onchange('discount')
+    def _onchange_discount_fsm(self):
+        for line in self:
+            if line._has_fsm_origin():
+                line.discount = 0.0
