@@ -117,19 +117,15 @@
                                             </span>
                                         </t>
                                     </td>
-                                    <t t-if="line.equipo_ids">
                                         <td name="td_equipo_ids">
                                             <t t-foreach="line.equipo_ids" t-as="equipment">
                                                 <span t-field="equipment.name"/>
                                                 <br/>
                                             </t>
                                         </td>
-                                    </t>
-                                    <t t-if="line.intervencion">
                                         <td name="td_intervencion">
                                             <span t-field="line.intervencion"/>
                                         </td>
-                                    </t>
                                     <td name="td_quantity" class="o_td_quantity text-end">
                                         <span t-field="line.product_uom_qty" class="text-nowrap">3</span>
                                         <span t-field="line.product_uom">units</span>
