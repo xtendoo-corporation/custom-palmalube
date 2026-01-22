@@ -11,9 +11,22 @@ class SaleOrder(models.Model):
         """Cancelar pedido de venta directamente sin wizard"""
         return self.write({"state": "cancel"})
 
-
     def _get_order_lines_to_report(self):
         lines = super()._get_order_lines_to_report()
         # Filtra para asegurar que todos los elementos sean instancias válidas de sale.order.line
         lines = lines.filtered(lambda l: l and l._name == 'sale.order.line')
         return lines
+
+    tiene_equipos_o_intervencion = fields.Boolean(
+        string="¿Tiene equipos o intervención?",
+        compute="_compute_tiene_equipos_o_intervencion",
+        store=True,
+    )
+
+    def _compute_tiene_equipos_o_intervencion(self):
+        for order in self:
+            order.tiene_equipos_o_intervencion = any(
+                bool(getattr(line, 'equipo_ids', False)) or bool(getattr(line, 'intervencion', False))
+                for line in order.order_line
+            )
+

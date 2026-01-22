@@ -79,9 +79,10 @@
                     <thead style="display: table-row-group">
                         <tr>
                             <th name="th_description" class="text-start">Descripción</th>
-<!--                                <th name="equipo_ids" class="text-start">Equipos</th>-->
-<!--                                <th name="intervencion" class="text-start">Intervención</th>-->
-
+                            <t t-if="doc.tiene_equipos_o_intervencion">
+                                <th name="equipo_ids" class="text-start">Equipos</th>
+                                <th name="intervencion" class="text-start">Intervención</th>
+                            </t>
                             <th name="th_quantity" class="text-end text-nowrap">Cantidad</th>
                             <th name="th_priceunit" class="text-end text-nowrap">Precio unitario</th>
                             <th name="th_discount" t-if="display_discount" class="text-end">
@@ -117,18 +118,19 @@
                                             </span>
                                         </t>
                                     </td>
-<!--                                        <td name="td_equipo_ids">-->
-<!--                                            <t t-foreach="line.equipo_ids" t-as="equipment">-->
-<!--                                                <span t-field="equipment.name"/>-->
-<!--                                                <br/>-->
-<!--                                            </t>-->
-<!--                                        </td>-->
-<!--                                        <td name="td_intervencion">-->
-<!--                                            <span t-field="line.intervencion"/>-->
-<!--                                        </td>-->
+                                    <t t-if="doc.tiene_equipos_o_intervencion">
+                                        <td name="td_equipo_ids">
+                                            <t t-foreach="line.equipo_ids" t-as="equipment">
+                                                <span t-field="equipment.name"/>
+                                                <br/>
+                                            </t>
+                                        </td>
+                                        <td name="td_intervencion">
+                                            <span t-field="line.intervencion"/>
+                                        </td>
+                                    </t>
                                     <td name="td_quantity" class="o_td_quantity text-end">
                                         <span t-field="line.product_uom_qty" class="text-nowrap">3</span>
-                                        <span t-field="line.product_uom">units</span>
                                         <span t-if="line.product_packaging_id">
                                             (
                                             <span t-field="line.product_packaging_qty"
