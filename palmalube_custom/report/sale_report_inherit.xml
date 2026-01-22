@@ -19,5 +19,12 @@
                 <span t-field="line.intervencion"/>
             </td>
         </xpath>
+        <xpath expr="//div[@t-if='doc.user_id.name']" position="after">
+            <div class="col">
+                <strong>Modo de pago: </strong>
+                <br/>
+                <span t-if="doc.payment_mode_id" t-field="doc.payment_mode_id.name"/>
+            </div>
+        </xpath>
     </template>
 </odoo>

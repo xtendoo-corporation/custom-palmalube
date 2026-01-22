@@ -17,5 +17,12 @@
                 <span t-field="line.intervencion"/>
             </td>
         </xpath>
+        <xpath expr="//div[@name='reference']" position="after">
+            <div class="col">
+                <strong>Modo de pago: </strong>
+                <br/>
+                <span t-if="o.payment_mode_id" t-field="o.payment_mode_id.name"/>
+            </div>
+        </xpath>
     </template>
 </odoo>
