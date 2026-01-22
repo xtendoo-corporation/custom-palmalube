@@ -3,14 +3,16 @@
     <template id="report_saleorder_albaran_document">
         <t t-call="web.external_layout">
             <!-- Copia de report_saleorder_document, cambiando 'pedido' por 'Albarán' -->
-            <t t-set="doc" t-value="doc.with_context(lang=doc.partner_id.lang)" />
+            <t t-set="doc" t-value="doc.with_context(lang=doc.partner_id.lang)"/>
             <t t-set="forced_vat" t-value="doc.fiscal_position_id.foreign_vat"/>
             <t t-set="address">
                 <div t-field="doc.partner_id"
-                    t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}' />
+                     t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'/>
                 <p t-if="doc.partner_id.vat">
-                    <t t-if="doc.company_id.account_fiscal_country_id.vat_label" t-out="doc.company_id.account_fiscal_country_id.vat_label"/>
-                    <t t-else="">Tax ID</t>: <span t-field="doc.partner_id.vat"/>
+                    <t t-if="doc.company_id.account_fiscal_country_id.vat_label"
+                       t-out="doc.company_id.account_fiscal_country_id.vat_label"/>
+                    <t t-else="">Tax ID</t>:
+                    <span t-field="doc.partner_id.vat"/>
                 </p>
             </t>
             <t t-if="doc.partner_shipping_id == doc.partner_invoice_id
@@ -26,11 +28,11 @@
                         </t>
                     </strong>
                     <div t-field="doc.partner_invoice_id"
-                        t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True, "phone_icons": True}'/>
+                         t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True, "phone_icons": True}'/>
                     <t t-if="doc.partner_shipping_id != doc.partner_invoice_id">
                         <strong class="d-block mt-3">Dirección de Envío</strong>
                         <div t-field="doc.partner_shipping_id"
-                            t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True, "phone_icons": True}'/>
+                             t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True, "phone_icons": True}'/>
                     </t>
                 </t>
             </t>
@@ -38,9 +40,9 @@
                 <div class="oe_structure"/>
                 <t t-set="is_proforma" t-value="env.context.get('proforma', False) or is_pro_forma"/>
                 <t t-set="layout_document_title">
-                    <span t-if="is_proforma">Pro-Forma Invoice # </span>
-                    <span t-elif="doc.state in ['draft','sent']">Albarán # </span>
-                    <span t-else="">Albarán # </span>
+                    <span t-if="is_proforma">Pro-Forma Invoice #</span>
+                    <span t-elif="doc.state in ['draft','sent']">Albarán #</span>
+                    <span t-else="">Albarán #</span>
                     <span t-field="doc.name">SO0000</span>
                 </t>
                 <div class="row mb-4" id="informations">
@@ -55,8 +57,8 @@
                         <div t-field="doc.date_order" t-options='{"widget": "date"}'>2023-12-31</div>
                     </div>
                     <div t-if="doc.validity_date and doc.state in ['draft', 'sent']"
-                        class="col"
-                        name="expiration_date">
+                         class="col"
+                         name="expiration_date">
                         <strong>Expiración</strong>
                         <div t-field="doc.validity_date">2023-12-31</div>
                     </div>
@@ -64,14 +66,22 @@
                         <strong>Comercial</strong>
                         <div t-field="doc.user_id">Mitchell Admin</div>
                     </div>
+                    <div t-if="doc.payment_mode_id.name" class="col">
+                        <strong>Modo de pago</strong>
+                        <div t-field="doc.payment_mode_id">Efectivo</div>
+                    </div>
                 </div>
-                <t t-set="lines_to_report" t-value="doc._get_order_lines_to_report()"/>
-                <t t-set="display_discount" t-value="any(l.discount for l in lines_to_report)"/>
+                <t t-set="lines_to_report" t-value="doc._get_order_lines_to_report() or []"/>
+                <t t-set="display_discount" t-value="any(l.discount for l in lines_to_report if l)"/>
+
                 <div class="oe_structure"></div>
                 <table class="o_has_total_table table o_main_table table-borderless">
                     <thead style="display: table-row-group">
                         <tr>
                             <th name="th_description" class="text-start">Descripción</th>
+                                <th name="equipo_ids" class="text-start">Equipos</th>
+                                <th name="intervencion" class="text-start">Intervención</th>
+
                             <th name="th_quantity" class="text-end text-nowrap">Cantidad</th>
                             <th name="th_priceunit" class="text-end text-nowrap">Precio unitario</th>
                             <th name="th_discount" t-if="display_discount" class="text-end">
@@ -99,18 +109,35 @@
                                     <td name="td_name">
                                         <span t-field="line.name">Bacon Burger</span>
                                         <t t-if="doc.sigaus_has_line and line.order_id.company_id.sigaus_enable and line.order_id.company_id.sigaus_show_in_reports and line.product_id and line.product_id.sigaus_has_amount">
-                                            <br />
+                                            <br/>
                                             <span style="font-size: 70%; opacity: 0.7;">
                                                 Aportación SIGAUS (RD 679/2006):
-                                                <span t-field="line.sigaus_amount" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                                <span t-field="line.sigaus_amount"
+                                                      t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
                                             </span>
                                         </t>
                                     </td>
+                                    <t t-if="line.equipo_ids">
+                                        <td name="td_equipo_ids">
+                                            <t t-foreach="line.equipo_ids" t-as="equipment">
+                                                <span t-field="equipment.name"/>
+                                                <br/>
+                                            </t>
+                                        </td>
+                                    </t>
+                                    <t t-if="line.intervencion">
+                                        <td name="td_intervencion">
+                                            <span t-field="line.intervencion"/>
+                                        </td>
+                                    </t>
                                     <td name="td_quantity" class="o_td_quantity text-end">
                                         <span t-field="line.product_uom_qty" class="text-nowrap">3</span>
                                         <span t-field="line.product_uom">units</span>
                                         <span t-if="line.product_packaging_id">
-                                            (<span t-field="line.product_packaging_qty" t-options='{"widget": "integer"}'/> <span t-field="line.product_packaging_id"/>)
+                                            (
+                                            <span t-field="line.product_packaging_qty"
+                                                  t-options='{"widget": "integer"}'/>
+                                            <span t-field="line.product_packaging_id"/>)
                                         </span>
                                     </td>
                                     <td name="td_priceunit" class="text-end text-nowrap">
@@ -119,11 +146,14 @@
                                     <td t-if="display_discount" class="text-end">
                                         <span t-field="line.discount">-</span>
                                     </td>
-                                    <t t-set="taxes" t-value="', '.join([(tax.invoice_label or tax.name) for tax in line.tax_id])"/>
-                                    <td name="td_taxes" t-att-class="'text-end text-nowrap' if len(taxes) &lt; 10 else 'text-end'">
+                                    <t t-set="taxes"
+                                       t-value="', '.join([(tax.invoice_label or tax.name) for tax in line.tax_id])"/>
+                                    <td name="td_taxes"
+                                        t-att-class="'text-end text-nowrap' if len(taxes) &lt; 10 else 'text-end'">
                                         <span t-out="taxes">Tax 15%</span>
                                     </td>
-                                    <td t-if="not line.is_downpayment" name="td_subtotal" class="text-end o_price_total">
+                                    <td t-if="not line.is_downpayment" name="td_subtotal"
+                                        class="text-end o_price_total">
                                         <span t-field="line.price_subtotal">27.00</span>
                                     </td>
                                 </t>
@@ -136,7 +166,9 @@
                                 </t>
                                 <t t-elif="line.display_type == 'line_note'">
                                     <td name="td_note_line" colspan="99">
-                                        <span t-field="line.name">A note, whose content usually applies to the section or product above.</span>
+                                        <span t-field="line.name">A note, whose content usually applies to the section
+                                            or product above.
+                                        </span>
                                     </td>
                                 </t>
                             </tr>
@@ -158,7 +190,8 @@
                                         <span
                                             t-out="current_subtotal"
                                             t-options='{"widget": "monetary", "display_currency": doc.currency_id}'
-                                        >31.05</span>
+                                        >31.05
+                                        </span>
                                     </td>
                                 </tr>
                             </t>
@@ -191,13 +224,15 @@
                     </div>
                 </div>
                 <div>
-                    <span t-field="doc.note" t-att-style="'text-align:justify;text-justify:inter-word;' if doc.company_id.terms_type != 'html' else ''" name="order_note"/>
+                    <span t-field="doc.note"
+                          t-att-style="'text-align:justify;text-justify:inter-word;' if doc.company_id.terms_type != 'html' else ''"
+                          name="order_note"/>
                     <p t-if="not is_html_empty(doc.payment_term_id.note)">
                         <span t-field="doc.payment_term_id.note">El pago también debe transmitirse con amor</span>
                     </p>
                     <div class="oe_structure"/>
                     <p t-if="doc.fiscal_position_id and not is_html_empty(doc.fiscal_position_id.sudo().note)"
-                        id="fiscal_position_remark">
+                       id="fiscal_position_remark">
                         <strong>Observación de Posición Fiscal:</strong>
                         <span t-field="doc.fiscal_position_id.sudo().note">No hay más requisitos para este pago</span>
                     </p>

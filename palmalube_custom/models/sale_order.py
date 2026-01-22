@@ -11,3 +11,9 @@ class SaleOrder(models.Model):
         """Cancelar pedido de venta directamente sin wizard"""
         return self.write({"state": "cancel"})
 
+
+    def _get_order_lines_to_report(self):
+        lines = super()._get_order_lines_to_report()
+        # Filtra para asegurar que todos los elementos sean instancias válidas de sale.order.line
+        lines = lines.filtered(lambda l: l and l._name == 'sale.order.line')
+        return lines

@@ -12,9 +12,7 @@ class SaleOrderLine(models.Model):
     )  # Editable
     intervencion = fields.Char(
         string='Intervención',
-        compute='_compute_intervencion',
-        store=False
-    )  # Editable
+    )  # Editable y con valor sugerido
 
     def _empty_fsm(self):
         return self.env['fsm.order'].browse(self.env['fsm.order'].ids[:0])
@@ -65,25 +63,20 @@ class SaleOrderLine(models.Model):
         store=False
     )
 
-    @api.depends('order_id')
-    def _compute_intervencion(self):
-        import re
-        for line in self:
-            intervencion = ''
-            if line.order_id:
-                fsm_orders = self._get_fsm_orders_from_sale_order(line.order_id)
-                if fsm_orders:
-                    texts = []
-                    for fsm in fsm_orders:
-                        txt = False
-                        if hasattr(fsm, 'description') and fsm.description:
-                            txt = fsm.description
-                        if txt:
-                            clean = re.sub('<[^<]+?>', '', txt) if txt else ''
-                            texts.append(clean.strip())
-                    if texts:
-                        intervencion = '\n'.join(texts)
-            line.intervencion = intervencion
+
+    @api.model
+    def default_get(self, fields):
+        res = super().default_get(fields)
+        # Sugerir valor por defecto solo si se está creando desde un pedido
+        order_id = self._context.get('default_order_id')
+        if 'intervencion' in fields and order_id:
+            order = self.env['sale.order'].browse(order_id)
+            fsm_orders = self._get_fsm_orders_from_sale_order(order)
+            for fsm_order in fsm_orders:
+                if hasattr(fsm_order, 'description') and fsm_order.description:
+                    res['intervencion'] = fsm_order.description
+                    break
+        return res
 
     @api.onchange('order_id')
     def _onchange_equipo_intervencion(self):

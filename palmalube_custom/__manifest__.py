@@ -25,6 +25,8 @@
         "views/account_payment_views.xml",
         "views/sale_order_line_views.xml",
         "views/account_move_line_views.xml",
+        "report/invoice_report_inherit.xml",
+        "report/sale_report_inherit.xml",
         "actions/account_payment_update_comercial_from_chatter.xml",
     ],
     "installable": True,
