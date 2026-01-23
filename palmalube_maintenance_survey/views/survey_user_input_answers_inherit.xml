@@ -10,6 +10,7 @@
             </xpath>
             <xpath expr="//field[@name='create_date']" position="after">
                 <field name="date_next_revision"/>
+                <field name="observations"/>
             </xpath>
             <xpath expr="//field[@name='access_token']" position="after">
                <field name="signature" widget="image"/>

@@ -16,7 +16,7 @@ class SurveyUserInput(models.Model):
 
     date_next_revision = fields.Date(string='Próxima Revisión')
     signature = fields.Image(string='Firma del técnico', attachment=True)
-
+    observations = fields.Text(string='Observaciones')
     # NOTA: Se eliminó la restricción SQL 'maintenance_request_survey_unique'
     # porque ahora permitimos múltiples encuestas del mismo tipo en un mantenimiento
     # (una por cada línea de equipo)
