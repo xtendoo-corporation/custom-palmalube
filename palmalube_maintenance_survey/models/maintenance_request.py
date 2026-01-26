@@ -3,6 +3,10 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+from dateutil.relativedelta import relativedelta
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class MaintenanceRequest(models.Model):
@@ -44,6 +48,11 @@ class MaintenanceRequest(models.Model):
         string="Survey Count",
         compute="_compute_survey_count",
     )
+    date_next_revision = fields.Date(
+        string='Próxima Revisión',
+        compute='_compute_date_next_revision',
+        store=True,
+    )
 
     @api.depends("survey_id", "stage_id", "stage_id.require_survey")
     def _compute_survey_required(self):
@@ -71,6 +80,33 @@ class MaintenanceRequest(models.Model):
         """Count survey responses."""
         for request in self:
             request.survey_count = 1 if request.survey_user_input_id else 0
+
+    @api.depends('schedule_date', 'repeat_interval', 'repeat_unit', 'recurring_maintenance')
+    def _compute_date_next_revision(self):
+        for rec in self:
+            _logger.info('[LOG] Calculando próxima revisión: schedule_date=%s, recurring_maintenance=%s, repeat_interval=%s, repeat_unit=%s', rec.schedule_date, rec.recurring_maintenance, rec.repeat_interval, rec.repeat_unit)
+            if rec.schedule_date and rec.recurring_maintenance and rec.repeat_interval and rec.repeat_unit:
+                interval = rec.repeat_interval
+                unit = rec.repeat_unit
+                _logger.info('[LOG] Entrando en cálculo de próxima revisión: schedule_date=%s, recurring_maintenance=%s, repeat_interval=%s, repeat_unit=%s', rec.schedule_date, rec.recurring_maintenance, rec.repeat_interval, rec.repeat_unit)
+                if unit == 'day':
+                    rec.date_next_revision = fields.Date.to_date(rec.schedule_date) + relativedelta(days=interval)
+                    _logger.info('[LOG] Próxima revisión (día): %s', rec.date_next_revision)
+                elif unit == 'week':
+                    rec.date_next_revision = fields.Date.to_date(rec.schedule_date) + relativedelta(weeks=interval)
+                    _logger.info('[LOG] Próxima revisión (semana): %s', rec.date_next_revision)
+                elif unit == 'month':
+                    rec.date_next_revision = fields.Date.to_date(rec.schedule_date) + relativedelta(months=interval)
+                    _logger.info('[LOG] Próxima revisión (mes): %s', rec.date_next_revision)
+                elif unit == 'year':
+                    rec.date_next_revision = fields.Date.to_date(rec.schedule_date) + relativedelta(years=interval)
+                    _logger.info('[LOG] Próxima revisión (año): %s', rec.date_next_revision)
+                else:
+                    rec.date_next_revision = False
+                    _logger.warning('[LOG] Unidad de intervalo no reconocida: %s', unit)
+            else:
+                rec.date_next_revision = False
+                _logger.info('[LOG] No se pudo calcular próxima revisión, condiciones no cumplidas.')
 
     @api.model_create_multi
     def create(self, vals_list):

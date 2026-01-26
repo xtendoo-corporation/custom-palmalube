@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import fields, models, api
+from dateutil.relativedelta import relativedelta
 
 
 class SurveyUserInput(models.Model):
@@ -14,15 +15,70 @@ class SurveyUserInput(models.Model):
         help="Maintenance request linked to this survey response",
     )
 
-    date_next_revision = fields.Date(string='Próxima Revisión')
+    date_next_revision = fields.Date(
+        string='Próxima Revisión',
+        related='maintenance_request_id.date_next_revision',
+        store=True,
+        readonly=True,
+    )
     signature = fields.Image(string='Firma del técnico', attachment=True)
     observations = fields.Text(string='Observaciones')
     # NOTA: Se eliminó la restricción SQL 'maintenance_request_survey_unique'
     # porque ahora permitimos múltiples encuestas del mismo tipo en un mantenimiento
     # (una por cada línea de equipo)
 
+
+
+    def create(self, vals):
+        survey_id = vals.get('survey_id')
+        maintenance_request_id = vals.get('maintenance_request_id')
+        maintenance_request_equipment_line_id = vals.get('maintenance_request_equipment_line_id')
+        ctx = self.env.context
+
+        # Si no hay maintenance_request_id, intentar vincularlo por contexto o por búsqueda
+        if not maintenance_request_id:
+            # Intentar contexto
+            if ctx.get('active_model') == 'maintenance.request' and ctx.get('active_id'):
+                vals['maintenance_request_id'] = ctx['active_id']
+                maintenance_request_id = vals['maintenance_request_id']
+            # Si sigue sin estar, buscar el mantenimiento por usuario y survey
+            elif survey_id:
+                # Buscar el mantenimiento más reciente con ese survey y estado abierto
+                request = self.env['maintenance.request'].search([
+                    ('survey_id', '=', survey_id),
+                    ('stage_id', '!=', False),
+                ], order='id desc', limit=1)
+                if request:
+                    vals['maintenance_request_id'] = request.id
+                    maintenance_request_id = request.id
+
+
+        # Si existe un registro para la combinación, reutilizarlo
+        # IMPORTANTE: Si hay maintenance_request_equipment_line_id, verificarlo también
+        # para que cada línea tenga su propia encuesta independiente
+        if survey_id and maintenance_request_id:
+            domain = [
+                ('survey_id', '=', survey_id),
+                ('maintenance_request_id', '=', maintenance_request_id)
+            ]
+            # Si es de una línea específica, buscar solo esa combinación
+            if maintenance_request_equipment_line_id:
+                domain.append(('maintenance_request_equipment_line_id', '=', maintenance_request_equipment_line_id))
+            else:
+                # Si no es de una línea, asegurar que no tenga línea asociada
+                domain.append(('maintenance_request_equipment_line_id', '=', False))
+
+            existing = self.env['survey.user_input'].search(domain, limit=1)
+            if existing:
+                existing.sudo().write(vals)
+                return existing
+
+        record = super().create(vals)
+        if record.maintenance_request_id:
+            record.maintenance_request_id.sudo().write({'survey_user_input_id': record.id})
+        return record
+
     def write(self, vals):
-        """Sync survey state to maintenance request when completed."""
         res = super().write(vals)
 
         # If state changed to 'done', update maintenance request
@@ -69,54 +125,6 @@ class SurveyUserInput(models.Model):
             'view_mode': 'form',
             'target': 'current',
         }
-
-    def create(self, vals):
-        survey_id = vals.get('survey_id')
-        maintenance_request_id = vals.get('maintenance_request_id')
-        maintenance_request_equipment_line_id = vals.get('maintenance_request_equipment_line_id')
-        ctx = self.env.context
-
-        # Si no hay maintenance_request_id, intentar vincularlo por contexto o por búsqueda
-        if not maintenance_request_id:
-            # Intentar contexto
-            if ctx.get('active_model') == 'maintenance.request' and ctx.get('active_id'):
-                vals['maintenance_request_id'] = ctx['active_id']
-                maintenance_request_id = vals['maintenance_request_id']
-            # Si sigue sin estar, buscar el mantenimiento por usuario y survey
-            elif survey_id:
-                # Buscar el mantenimiento más reciente con ese survey y estado abierto
-                request = self.env['maintenance.request'].search([
-                    ('survey_id', '=', survey_id),
-                    ('stage_id', '!=', False),
-                ], order='id desc', limit=1)
-                if request:
-                    vals['maintenance_request_id'] = request.id
-                    maintenance_request_id = request.id
-
-        # Si existe un registro para la combinación, reutilizarlo
-        # IMPORTANTE: Si hay maintenance_request_equipment_line_id, verificarlo también
-        # para que cada línea tenga su propia encuesta independiente
-        if survey_id and maintenance_request_id:
-            domain = [
-                ('survey_id', '=', survey_id),
-                ('maintenance_request_id', '=', maintenance_request_id)
-            ]
-            # Si es de una línea específica, buscar solo esa combinación
-            if maintenance_request_equipment_line_id:
-                domain.append(('maintenance_request_equipment_line_id', '=', maintenance_request_equipment_line_id))
-            else:
-                # Si no es de una línea, asegurar que no tenga línea asociada
-                domain.append(('maintenance_request_equipment_line_id', '=', False))
-
-            existing = self.env['survey.user_input'].search(domain, limit=1)
-            if existing:
-                existing.sudo().write(vals)
-                return existing
-
-        record = super().create(vals)
-        if record.maintenance_request_id:
-            record.maintenance_request_id.sudo().write({'survey_user_input_id': record.id})
-        return record
 
     def action_print_answers(self):
         self.ensure_one()
