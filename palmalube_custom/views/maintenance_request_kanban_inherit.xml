@@ -14,6 +14,8 @@
                     <field name="partner_id" />
                     <field name="employee_id" />
                     <field name="employee_ids" />
+                    <field name="equipment_id" />
+                    <field name="equipment_ids" />
                 </xpath>
 
                 <!--
@@ -23,7 +25,10 @@
                     We replace the whole span to avoid using equipment_id in the t-if if it's not needed.
                 -->
                 <xpath expr="//span[field[@name='equipment_id']]" position="replace">
-
+                    <div t-if="record.equipment_ids.raw_value.length">
+                        <strong>Equipos: </strong>
+                        <field name="equipment_ids" widget="many2many_tags" />
+                    </div>
                 </xpath>
 
                 <xpath expr="//field[@name='name']" position="replace">
@@ -38,7 +43,7 @@
                     expr="//span[@name='owner_user_id'] | //t[@t-name='card']//field[@name='employee_id']"
                     position="replace">
                     <div class="d-flex flex-column">
-                         <span t-if="record.partner_id.raw_value">
+                        <span t-if="record.partner_id.raw_value">
                             <strong>Cliente: </strong>
                             <field name="partner_id" />
                         </span>
