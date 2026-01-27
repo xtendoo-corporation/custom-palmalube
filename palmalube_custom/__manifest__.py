@@ -14,6 +14,9 @@
         "contacts",
         "stock",
         "repair",
+        "maintenance_equipment_partner",
+        "hr_maintenance",
+        "maintenance_request_employee",
     ],
     "data": [
         "security/ir.model.access.csv",
@@ -28,6 +31,7 @@
         "report/invoice_report_inherit.xml",
         "report/sale_report_inherit.xml",
         "actions/account_payment_update_comercial_from_chatter.xml",
+        "views/maintenance_request_kanban_inherit.xml",
     ],
     "installable": True,
     "application": False,
