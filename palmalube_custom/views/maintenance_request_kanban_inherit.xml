@@ -16,24 +16,21 @@
                     <field name="employee_ids" />
                 </xpath>
 
-                <!-- 
-                    The original view has: 
+                <!--
+                    The original view has:
                     <span t-if="record.equipment_id.raw_value"><field name="equipment_id"/><span
                 t-if="record.category_id.raw_value"> (<field name="category_id"/>)</span></span>
                     We replace the whole span to avoid using equipment_id in the t-if if it's not needed.
                 -->
                 <xpath expr="//span[field[@name='equipment_id']]" position="replace">
-                    <span t-if="record.partner_id.raw_value">
-                        <strong>Cliente: </strong>
-                        <field name="partner_id" />
-                    </span>
+
                 </xpath>
 
                 <xpath expr="//field[@name='name']" position="replace">
                     <field name="name" class="fw-bold fs-5" />
                 </xpath>
 
-                <!-- 
+                <!--
                     The hr_maintenance module replaces span[@name='owner_user_id'] with field[@name='employee_id'].
                     We target both just in case, or to be safe with the inheritance.
                 -->
@@ -41,6 +38,10 @@
                     expr="//span[@name='owner_user_id'] | //t[@t-name='card']//field[@name='employee_id']"
                     position="replace">
                     <div class="d-flex flex-column">
+                         <span t-if="record.partner_id.raw_value">
+                            <strong>Cliente: </strong>
+                            <field name="partner_id" />
+                        </span>
                         <span t-if="record.employee_id.raw_value">
                             <strong>Creado por: </strong>
                             <field name="employee_id" />
