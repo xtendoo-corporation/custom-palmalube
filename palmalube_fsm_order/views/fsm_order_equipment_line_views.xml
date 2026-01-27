@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vista Lista de las líneas de equipos FSM -->
+    <record id="fsm_order_equipment_line_tree_view" model="ir.ui.view">
+        <field name="name">fsm.order.equipment.line.tree</field>
+        <field name="model">fsm.order.equipment.line</field>
+        <field name="arch" type="xml">
+            <list string="Equipos" editable="bottom">
+                <header>
+                    <button name="action_start_survey" type="object"
+                        string="Iniciar Checklist" />
+                </header>
+                <field name="sequence" widget="handle" />
+                <field name="equipment_id" />
+                <field name="equipment_partner_id" />
+                <field name="survey_id" />
+                <field name="survey_state" widget="badge"
+                    decoration-success="survey_state == 'completed'"
+                    decoration-warning="survey_state == 'in_progress'"
+                    decoration-danger="survey_state == 'not_started'" />
+                <button name="action_start_survey" type="object"
+                    title="Iniciar Checklist"
+                    icon="fa-play-circle"
+                    invisible="not survey_id or survey_state == 'completed'"
+                    column_invisible="False" />
+                <button name="action_view_survey_result" type="object"
+                    title="Ver Resultados"
+                    icon="fa-bar-chart"
+                    invisible="survey_state != 'completed'"
+                    column_invisible="False" />
+            </list>
+        </field>
+    </record>
+
+    <!-- Vista Form de las líneas de equipos FSM -->
+    <record id="fsm_order_equipment_line_form_view" model="ir.ui.view">
+        <field name="name">fsm.order.equipment.line.form</field>
+        <field name="model">fsm.order.equipment.line</field>
+        <field name="arch" type="xml">
+            <form string="Línea de Equipo">
+                <header>
+                    <button name="action_start_survey" type="object"
+                        string="Iniciar Checklist"
+                        class="oe_highlight"
+                        invisible="not survey_id or survey_state == 'completed'" />
+                    <button name="action_view_survey_result" type="object"
+                        string="Ver Resultados"
+                        invisible="survey_state != 'completed'" />
+                    <field name="survey_state" widget="statusbar"
+                        statusbar_visible="not_started,in_progress,completed" />
+                </header>
+                <sheet>
+                    <group>
+                        <group name="equipment_info">
+                            <field name="sequence" />
+                            <field name="equipment_id" required="1" />
+                            <field name="equipment_partner_id" />
+                        </group>
+                        <group name="survey_info">
+                            <field name="survey_id" />
+                            <field name="survey_user_input_id" readonly="1" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>
