@@ -132,9 +132,14 @@ class FSMOrder(models.Model):
         """Crea una orden de venta basada en la orden de trabajo"""
         print("[FSMOrder] action_create_sale_order called for FSM Order ID:", self.id)
         self.ensure_one()
+
+        # Obtener el tipo de venta 'Reparación'
+        type_id = self.env.ref('palmalube_sale_type.sale_order_type_reparacion', raise_if_not_found=False)
+
         sale_order_vals = {
             'partner_id': self.partner_id.id,
             'fsm_order_id': self.id,  # Relaciona la orden de venta con el fsm.order
+            'type_id': type_id.id if type_id else False,
         }
         print("[FSMOrder] Valores para crear sale.order:", sale_order_vals)
         sale_order = self.env['sale.order'].create(sale_order_vals)

@@ -4,14 +4,15 @@
         <!-- Tipo de venta Ventas -->
         <record id="sale_order_type_ventas" model="sale.order.type">
             <field name="name">Ventas</field>
-            <field name="sequence_id" ref="palmalube_sale_type.seq_sale_order_ventas"/>
-            <field name="journal_id" ref="account.sales_journal"/>
+            <field name="sequence_id" ref="palmalube_sale_type.seq_sale_order_ventas" />
+            <field name="journal_id" model="account.journal"
+                search="[('name', '=', 'Facturas de ventas'), ('type', '=', 'sale')]" />
         </record>
         <!-- Tipo de venta Reparacion -->
         <record id="sale_order_type_reparacion" model="sale.order.type">
             <field name="name">Reparacion</field>
-            <field name="sequence_id" ref="palmalube_sale_type.seq_sale_order_reparacion"/>
-            <field name="journal_id" ref="palmalube_sale_type.account_journal_reparacion"/>
+            <field name="sequence_id" ref="palmalube_sale_type.seq_sale_order_reparacion" />
+            <field name="journal_id" ref="palmalube_sale_type.account_journal_reparacion" />
         </record>
     </data>
 </odoo>
