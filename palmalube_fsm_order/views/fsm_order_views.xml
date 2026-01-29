@@ -10,6 +10,10 @@
                 <field name="equipment_count" invisible="1" />
             </xpath>
 
+            <xpath expr="//field[@name='location_id']" position="after">
+                <field name="partner_city" />
+            </xpath>
+
             <xpath expr="//notebook/page[1]" position="before">
                 <page string="Equipos y Checklists" name="equipment_lines">
                     <field name="equipment_line_ids" nolabel="1">
@@ -64,6 +68,8 @@
             <xpath expr="//list" position="replace">
                 <list string="Órdenes de Trabajo">
                     <field name="name" />
+                    <field name="description" />
+                    <field name="partner_city" />
                     <field name="date_open" />
                     <field name="responsible_id" />
                     <field name="partner_id" />

@@ -2,6 +2,7 @@ from odoo import _, api, fields, models
 
 class FSMOrder(models.Model):
     _inherit = 'fsm.order'
+    _description = 'Mantenimiento'
     _order = 'name desc'
 
     equipment_ids = fields.Many2many(
@@ -34,6 +35,12 @@ class FSMOrder(models.Model):
         "res.currency",
         related="company_id.currency_id",
         string="Moneda",
+    )
+    partner_city = fields.Char(
+        string="Municipio",
+        related="partner_id.city",
+        readonly=True,
+        store=True,
     )
 
     @api.depends('sale_order_ids.amount_total')
