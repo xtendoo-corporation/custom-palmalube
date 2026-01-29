@@ -48,3 +48,35 @@ class RepairOrder(models.Model):
                 if eq.customer_id.id != partner_id:
                     raise ValueError('No puedes asignar equipos de otro cliente a esta reparación.')
         return super().write(vals)
+
+    def action_create_sale_order(self):
+        # Lógica igual que en la herencia FSM: asignar tipo de venta 'Reparacion' al presupuesto
+        if any(repair.sale_order_id for repair in self):
+            concerned_ro = self.filtered('sale_order_id')
+            ref_str = "\n".join(ro.name for ro in concerned_ro)
+            raise self.env['res.users'].browse(self.env.uid).sudo()._get_exception_class()( # UserError
+                "No puedes crear un presupuesto para una orden de reparación ya vinculada a un pedido de venta.\nÓrdenes afectadas:\n%s" % ref_str
+            )
+        if any(not repair.partner_id for repair in self):
+            concerned_ro = self.filtered(lambda ro: not ro.partner_id)
+            ref_str = "\n".join(ro.name for ro in concerned_ro)
+            raise self.env['res.users'].browse(self.env.uid).sudo()._get_exception_class()( # UserError
+                "Debes definir un cliente para la orden de reparación para crear el presupuesto asociado.\nÓrdenes afectadas:\n%s" % ref_str
+            )
+        sale_order_values_list = []
+        type_id = self.env.ref('palmalube_sale_type.sale_order_type_reparacion', raise_if_not_found=False)
+        for repair in self:
+            vals = {
+                "company_id": repair.company_id.id,
+                "partner_id": repair.partner_id.id,
+                "warehouse_id": repair.picking_type_id.warehouse_id.id,
+                "repair_order_ids": [(4, repair.id)],
+            }
+            if type_id:
+                vals["type_id"] = type_id.id
+            sale_order = self.env['sale.order'].create(vals)
+            # Relacionar la orden de reparación con el pedido de venta
+            repair.sale_order_id = sale_order.id
+        # Crear líneas de venta a partir de los movimientos de stock
+        self.move_ids._create_repair_sale_order_line()
+        return self.action_view_sale_order()

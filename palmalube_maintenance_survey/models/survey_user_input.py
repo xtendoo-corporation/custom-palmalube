@@ -22,6 +22,7 @@ class SurveyUserInput(models.Model):
         readonly=True,
     )
     signature = fields.Image(string='Firma del técnico', attachment=True)
+    signature_client = fields.Image(string='Firma del cliente', attachment=True)
     observations = fields.Text(string='Observaciones')
     # NOTA: Se eliminó la restricción SQL 'maintenance_request_survey_unique'
     # porque ahora permitimos múltiples encuestas del mismo tipo en un mantenimiento

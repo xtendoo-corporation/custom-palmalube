@@ -77,7 +77,6 @@
                     <field name="date_start" />
                     <field name="amount_total" sum="Total" />
                     <field name="priority_level" widget="priority" />
-                    <field name="stage_id" />
                 </list>
             </xpath>
         </field>
