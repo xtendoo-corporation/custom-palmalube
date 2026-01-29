@@ -23,6 +23,7 @@
         "views/res_partner_views.xml",
         "views/maintenance_request_equipment_line_views.xml",
         "views/maintenance_request_views.xml",
+        "views/repair_order_views.xml",
     ],
     "installable": True,
     "application": False,

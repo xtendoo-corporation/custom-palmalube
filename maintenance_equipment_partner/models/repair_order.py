@@ -80,3 +80,9 @@ class RepairOrder(models.Model):
         # Crear líneas de venta a partir de los movimientos de stock
         self.move_ids._create_repair_sale_order_line()
         return self.action_view_sale_order()
+
+    def action_set_to_draft(self):
+        """Permite volver la reparación a estado borrador."""
+        for record in self:
+            record.state = 'draft'
+        return True
