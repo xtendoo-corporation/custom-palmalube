@@ -30,7 +30,8 @@ class AccountMoveLine(models.Model):
         for vals in vals_list:
             # Propagar valores por defecto desde la línea de venta
             if vals.get('sale_line_ids'):
-                sale_line = self.env['sale.order.line'].browse(vals['sale_line_ids'][0][1])
+                # Usamos un registro ficticio para procesar los comandos de Many2many de forma segura
+                sale_line = self.new({'sale_line_ids': vals['sale_line_ids']}).sale_line_ids[:1]
                 if sale_line:
                     vals.setdefault('equipo_ids', [(6, 0, sale_line.equipo_ids.ids)])
                     vals.setdefault('intervencion', sale_line.intervencion)
@@ -39,9 +40,9 @@ class AccountMoveLine(models.Model):
     def write(self, vals):
         # Si se cambia la relación con la línea de venta, actualizar valores
         if 'sale_line_ids' in vals:
-            for line in self:
-                sale_line = self.env['sale.order.line'].browse(vals['sale_line_ids'][0][1]) if vals['sale_line_ids'] else False
-                if sale_line:
-                    vals.setdefault('equipo_ids', [(6, 0, sale_line.equipo_ids.ids)])
-                    vals.setdefault('intervencion', sale_line.intervencion)
+            # Procesamos el primer ID de forma segura igual que en create
+            sale_line = self.new({'sale_line_ids': vals['sale_line_ids']}).sale_line_ids[:1]
+            if sale_line:
+                vals.setdefault('equipo_ids', [(6, 0, sale_line.equipo_ids.ids)])
+                vals.setdefault('intervencion', sale_line.intervencion)
         return super().write(vals)

@@ -11,7 +11,8 @@
     "data": [
         "data/ir_sequence.xml",
         "data/account_journal.xml",
-        "data/sale_order_type.xml"
+        "data/sale_order_type.xml",
+        "views/sale_order_views.xml"
     ],
     "installable": True,
     "application": False
