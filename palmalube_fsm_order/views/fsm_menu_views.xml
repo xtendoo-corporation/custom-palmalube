@@ -2,24 +2,29 @@
 <odoo>
     <!-- Renombrar el menú principal -->
     <record id="xtendoo_fsm.xtendoo_fsm_menu_main" model="ir.ui.menu">
-        <field name="name">Mantenimientos</field>
+        <field name="name">Partes de trabajo</field>
     </record>
 
     <!-- Renombrar la acción principal para que el título de la vista cambie -->
     <record id="xtendoo_fsm.action_xtendoo_fsm_order" model="ir.actions.act_window">
-        <field name="name">Mantenimientos</field>
+        <field name="name">Partes de trabajo</field>
     </record>
 
     <!-- Renombrar el submenú de órdenes -->
     <record id="xtendoo_fsm.xtendoo_fsm_menu_order_all" model="ir.ui.menu">
-        <field name="name">Mantenimientos</field>
+        <field name="name">Partes de trabajo</field>
+    </record>
+
+    <!-- Menú de órdenes - usar acciones universales -->
+    <record id="xtendoo_fsm.xtendoo_fsm_menu_orders" model="ir.ui.menu">
+        <field name="name">Partes</field>
     </record>
 
     <!-- Añadir menú de Equipos de mantenimiento -->
     <menuitem id="menu_maintenance_equipment_fsm"
-        name="Equipos"
-        parent="xtendoo_fsm.xtendoo_fsm_menu_main"
-        action="maintenance.hr_equipment_action"
-        groups="maintenance.group_equipment_manager,base.group_user"
-        sequence="15" />
+              name="Equipos"
+              parent="xtendoo_fsm.xtendoo_fsm_menu_main"
+              action="maintenance.hr_equipment_action"
+              groups="maintenance.group_equipment_manager,base.group_user"
+              sequence="15"/>
 </odoo>
