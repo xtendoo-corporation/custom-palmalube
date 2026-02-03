@@ -17,6 +17,7 @@
         "maintenance_equipment_partner",
         "hr_maintenance",
         "maintenance_request_employee",
+        "palmalube_limited_contact_by_salesperson",  # Necesario para las reglas de seguridad
     ],
     "data": [
         "security/ir.model.access.csv",

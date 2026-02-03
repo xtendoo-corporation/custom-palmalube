@@ -1,14 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="account_payment_comercial_see_own" model="ir.rule">
-        <field name="name">Ver solo pagos donde soy comercial</field>
-        <field name="model_id" ref="account.model_account_payment" />
-        <field name="domain_force">['|',('comercial_id','=',user.id),('comercial_id','=',False)]</field>
-        <field name="groups"
-            eval="[(4, ref('palmalube_limited_contact_by_salesperson.group_palmalube_limited_contacts_salesperson'))]" />
-        <field name="perm_read" eval="True" />
-        <field name="perm_write" eval="True" />
-        <field name="perm_create" eval="True" />
-        <field name="perm_unlink" eval="True" />
-    </record>
+    <data noupdate="1">
+        <!--
+            Sistema de restricción de pagos y facturas para comerciales (Palmalube) - Odoo 18
+
+            FUNCIONAMIENTO:
+            - Las reglas de comerciales limitados se aplican PRIMERO (más restrictivas)
+            - Las reglas de administradores se aplican después (menos restrictivas)
+            - Los comerciales limitados SOLO ven registros donde ellos son el comercial asignado
+            - Los administradores ven todos los registros sin restricción
+
+            IMPORTANTE:
+            - Los comerciales limitados NO ven registros sin comercial/vendedor asignado
+            - Solo ven registros donde comercial_id = ellos (pagos) o invoice_user_id = ellos (facturas)
+
+            GRUPOS USADOS:
+            - palmalube_limited_contact_by_salesperson.group_palmalube_limited_contacts_salesperson: Comerciales con restricciones
+            - account.group_account_manager: Administradores/Managers de contabilidad (ven todo)
+        -->
+
+        <!-- ============================================ -->
+        <!-- REGLAS PARA PAGOS (account.payment)          -->
+        <!-- ============================================ -->
+
+        <!-- PRIORIDAD 1: Comerciales limitados - Solo sus propios pagos -->
+        <record id="account_payment_comercial_see_own" model="ir.rule">
+            <field name="name">Palmalube: Comerciales ven solo sus propios pagos</field>
+            <field name="model_id" ref="account.model_account_payment" />
+            <field name="domain_force">[('comercial_id','=',user.id)]</field>
+            <field name="groups" eval="[(4, ref('palmalube_limited_contact_by_salesperson.group_palmalube_limited_contacts_salesperson'))]" />
+            <field name="perm_read" eval="True" />
+            <field name="perm_write" eval="True" />
+            <field name="perm_create" eval="True" />
+            <field name="perm_unlink" eval="True" />
+        </record>
+
+        <!-- PRIORIDAD 2: Administradores - Ver todos los pagos -->
+        <record id="account_payment_admin_see_all" model="ir.rule">
+            <field name="name">Palmalube: Administradores ven todos los pagos</field>
+            <field name="model_id" ref="account.model_account_payment" />
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[(4, ref('account.group_account_manager'))]" />
+            <field name="perm_read" eval="True" />
+            <field name="perm_write" eval="True" />
+            <field name="perm_create" eval="True" />
+            <field name="perm_unlink" eval="True" />
+        </record>
+
+        <!-- ============================================ -->
+        <!-- REGLAS PARA FACTURAS (account.move)          -->
+        <!-- ============================================ -->
+
+        <!-- PRIORIDAD 1: Comerciales limitados - Solo sus propias facturas -->
+        <record id="account_move_comercial_see_own" model="ir.rule">
+            <field name="name">Palmalube: Comerciales ven solo sus propias facturas</field>
+            <field name="model_id" ref="account.model_account_move" />
+            <field name="domain_force">[('invoice_user_id','=',user.id)]</field>
+            <field name="groups" eval="[(4, ref('palmalube_limited_contact_by_salesperson.group_palmalube_limited_contacts_salesperson'))]" />
+            <field name="perm_read" eval="True" />
+            <field name="perm_write" eval="True" />
+            <field name="perm_create" eval="True" />
+            <field name="perm_unlink" eval="True" />
+        </record>
+
+    </data>
 </odoo>
