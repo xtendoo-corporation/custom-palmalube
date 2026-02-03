@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Heredar el reporte de factura -->
+    <template id="report_invoice_document_inherit_document_format" inherit_id="account.report_invoice_document">
+        <xpath expr="//div[@name='due_date']" position="replace"/>
+        <xpath expr="//div[@name='delivery_date']" position="replace"/>
+        <xpath expr="//div[@name='customer_code']" position="replace"/>
+        <xpath expr="//div[@name='invoice_date']" position="attributes">
+            <attribute name="class">col-2</attribute>
+        </xpath>
+        <xpath expr="//div[@name='invoice_date']" position="attributes">
+            <attribute name="class">col-2</attribute>
+        </xpath>
+        <xpath expr="//div[@name='origin']" position="attributes">
+            <attribute name="class">col-6</attribute>
+        </xpath>
+        <xpath expr="//t[@t-if='o.sigaus_has_line and line.move_id.company_id.sigaus_enable and line.move_id.company_id.sigaus_show_in_reports and line.product_id and line.product_id.sigaus_has_amount']" position="replace"/>
+    </template>
+</odoo>
