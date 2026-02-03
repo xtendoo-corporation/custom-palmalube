@@ -14,6 +14,13 @@
                 <field name="partner_city" />
             </xpath>
 
+            <xpath expr="//field[@name='partner_city']" position="after">
+                <field name="is_recurring" />
+                <field name="recurring_period" invisible="not is_recurring" required="is_recurring" />
+                <field name="recurring_quantity" invisible="not is_recurring" required="is_recurring" />
+                <field name="next_maintenance_date" invisible="not is_recurring" readonly="1" />
+            </xpath>
+
             <xpath expr="//notebook/page[1]" position="before">
                 <page string="Equipos y Checklists" name="equipment_lines">
                     <field name="equipment_line_ids" nolabel="1">

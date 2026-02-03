@@ -13,6 +13,7 @@
         "maintenance",
         "survey",
         "mail",
+        "palmalube_fsm_order",
     ],
     "data": [
         "security/ir.model.access.csv",

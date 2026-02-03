@@ -18,6 +18,27 @@ class SurveyUserInput(models.Model):
         string="Orden FSM",
         ondelete="cascade",
     )
+    next_maintenance_date = fields.Date(
+        string="Próxima Revisión",
+        related="fsm_order_id.next_maintenance_date",
+        readonly=True,
+        store=True,
+        help="Fecha de la próxima revisión/mantenimiento",
+    )
+    fsm_order_amount_total = fields.Monetary(
+        string="Precio",
+        related="fsm_order_id.amount_total",
+        readonly=True,
+        store=True,
+        currency_field="fsm_order_currency_id",
+        help="Importe total de la orden FSM",
+    )
+    fsm_order_currency_id = fields.Many2one(
+        "res.currency",
+        related="fsm_order_id.company_currency_id",
+        readonly=True,
+        store=True,
+    )
 
     def write(self, vals):
         """Forzar recomputación de survey_state cuando cambia el estado de la encuesta."""

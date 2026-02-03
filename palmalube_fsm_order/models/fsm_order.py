@@ -1,3 +1,4 @@
+from datetime import datetime
 from odoo import _, api, fields, models
 
 class FSMOrder(models.Model):
@@ -42,6 +43,51 @@ class FSMOrder(models.Model):
         readonly=True,
         store=True,
     )
+    is_recurring = fields.Boolean(
+        string="Recurrente",
+        default=False,
+        help="Indica si este mantenimiento es recurrente"
+    )
+    recurring_period = fields.Selection(
+        [
+            ('week', 'Semana'),
+            ('month', 'Mes'),
+            ('year', 'Año'),
+        ],
+        string="Plazo",
+        help="Período de recurrencia del mantenimiento"
+    )
+    recurring_quantity = fields.Integer(
+        string="Cantidad",
+        default=1,
+        help="Cantidad de períodos para la próxima revisión"
+    )
+    next_maintenance_date = fields.Date(
+        string="Próxima Revisión",
+        compute="_compute_next_maintenance_date",
+        store=True,
+        help="Fecha calculada para la próxima revisión/mantenimiento"
+    )
+
+    @api.depends('is_recurring', 'recurring_period', 'recurring_quantity', 'date_start')
+    def _compute_next_maintenance_date(self):
+        """Calcula la fecha de la próxima revisión/mantenimiento."""
+        from dateutil.relativedelta import relativedelta
+
+        for order in self:
+            if order.is_recurring and order.recurring_period and order.recurring_quantity and order.date_start:
+                base_date = order.date_start.date() if isinstance(order.date_start, datetime) else order.date_start
+
+                if order.recurring_period == 'week':
+                    order.next_maintenance_date = base_date + relativedelta(weeks=order.recurring_quantity)
+                elif order.recurring_period == 'month':
+                    order.next_maintenance_date = base_date + relativedelta(months=order.recurring_quantity)
+                elif order.recurring_period == 'year':
+                    order.next_maintenance_date = base_date + relativedelta(years=order.recurring_quantity)
+                else:
+                    order.next_maintenance_date = False
+            else:
+                order.next_maintenance_date = False
 
     @api.depends('sale_order_ids.amount_total')
     def _compute_amount_total(self):
@@ -64,7 +110,7 @@ class FSMOrder(models.Model):
             lineas_validas = self.equipment_line_ids.filtered(lambda l: l.equipment_id.customer_id == self.partner_id)
             if len(lineas_validas) != len(self.equipment_line_ids):
                 self.equipment_line_ids = [(6, 0, lineas_validas.ids)]
-            
+
             domain = [('customer_id', '=', self.partner_id.id)]
             return {'domain': {'equipment_ids': domain}}
         self.equipment_ids = False
@@ -78,12 +124,12 @@ class FSMOrder(models.Model):
             # Equipos actualmente en las líneas
             existing_equip_ids = self.equipment_line_ids.mapped('equipment_id.id')
             selected_equip_ids = self.equipment_ids.ids
-            
+
             # Líneas a eliminar (están en lines pero no en el Many2many seleccionado)
             lines_to_remove = self.equipment_line_ids.filtered(lambda l: l.equipment_id.id not in selected_equip_ids)
             for line in lines_to_remove:
                 self.equipment_line_ids = [(2, line.id, 0)]
-                
+
             # Líneas a añadir (están en Many2many pero no en las líneas)
             for equip_id in selected_equip_ids:
                 if equip_id not in existing_equip_ids:

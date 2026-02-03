@@ -10,7 +10,9 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//field[@name='create_date']" position="after">
-                <field name="date_next_revision" />
+                <field name="fsm_order_amount_total"/>
+                <field name="fsm_order_currency_id" invisible="1" />
+                <field name="next_maintenance_date"/>
                 <field name="observations" />
             </xpath>
             <xpath expr="//field[@name='access_token']" position="after">
