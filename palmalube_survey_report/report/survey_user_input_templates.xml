@@ -20,26 +20,27 @@
                             <div class="row mt-3 mb-3">
                                 <div class="col-6">
                                     <strong>Técnico:</strong>
-                                    <span t-if="o.partner_id" t-field="o.partner_id.name"/>
+                                    <span t-if="o.fsm_order_id and o.fsm_order_id.person_ids">
+                                        <t t-foreach="o.fsm_order_id.person_ids" t-as="person">
+                                            <span t-field="person.name"/>
+                                            <t t-if="not person_last">, </t>
+                                        </t>
+                                    </span>
+                                    <span t-elif="o.partner_id" t-field="o.partner_id.name"/>
                                     <span t-else="" t-field="o.email"/>
                                     <br/>
                                     <strong>Equipo:</strong>
-                                    <span
-                                        t-if="o.maintenance_request_id and o.maintenance_request_id.equipment_id">
-                                        <span
-                                            t-esc="o.maintenance_request_id.equipment_id.display_name"/>
+                                    <span t-if="o.fsm_order_id and o.fsm_order_id.equipment_ids">
+                                        <t t-foreach="o.fsm_order_id.equipment_ids" t-as="equipment">
+                                            <span t-field="equipment.name"/>
+                                            <t t-if="not equipment_last">, </t>
+                                        </t>
                                     </span>
                                     <span t-else="">No disponible</span>
                                 </div>
                                 <div class="col-6">
                                     <strong>Fecha:</strong>
                                     <span t-field="o.create_date" t-options='{"widget": "datetime"}'/>
-                                    <t t-if="o.date_next_revision">
-                                        <br/>
-                                        <strong>Fecha próxima revisión:</strong>
-                                        <span t-field="o.date_next_revision"
-                                              t-options='{"widget": "date"}'/>
-                                    </t>
                                 </div>
                             </div>
 
