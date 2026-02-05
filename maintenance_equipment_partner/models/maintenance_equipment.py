@@ -42,7 +42,7 @@ class MaintenanceEquipment(models.Model):
     note = fields.Html(
         string="Descripción",
         help="Descripción detallada del equipo",
-        tracking=True,
+        tracking=False,
     )
     image_1920 = fields.Image(
         string="Imagen",

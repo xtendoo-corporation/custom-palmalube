@@ -23,24 +23,105 @@
                                     <span t-if="o.fsm_order_id and o.fsm_order_id.person_ids">
                                         <t t-foreach="o.fsm_order_id.person_ids" t-as="person">
                                             <span t-field="person.name"/>
-                                            <t t-if="not person_last">, </t>
+                                            <t t-if="not person_last">,</t>
                                         </t>
                                     </span>
                                     <span t-elif="o.partner_id" t-field="o.partner_id.name"/>
                                     <span t-else="" t-field="o.email"/>
-                                    <br/>
-                                    <strong>Equipo:</strong>
-                                    <span t-if="o.fsm_order_id and o.fsm_order_id.equipment_ids">
-                                        <t t-foreach="o.fsm_order_id.equipment_ids" t-as="equipment">
-                                            <span t-field="equipment.name"/>
-                                            <t t-if="not equipment_last">, </t>
-                                        </t>
-                                    </span>
-                                    <span t-else="">No disponible</span>
                                 </div>
                                 <div class="col-6">
                                     <strong>Fecha:</strong>
                                     <span t-field="o.create_date" t-options='{"widget": "datetime"}'/>
+                                </div>
+                            </div>
+
+                            <!-- Customer Information -->
+                            <div class="row mb-3" t-if="o.fsm_order_id and o.fsm_order_id.partner_id">
+                                <div class="col-6">
+                                    <strong>Cliente:</strong>
+                                    <span t-field="o.fsm_order_id.partner_id.name"/>
+                                    <br/>
+                                    <t t-if="o.fsm_order_id.partner_id.vat">
+                                        <span t-field="o.fsm_order_id.partner_id.vat"/>
+                                        <br/>
+                                    </t>
+                                    <t t-if="o.fsm_order_id.partner_id.street">
+                                        <span t-field="o.fsm_order_id.partner_id.street"/>
+                                        <span t-if="o.fsm_order_id.partner_id.street2">
+                                            ,
+                                            <span t-field="o.fsm_order_id.partner_id.street2"/>
+                                        </span>
+                                        <br t-if="o.fsm_order_id.partner_id.city or o.fsm_order_id.partner_id.zip"/>
+                                        <span t-if="o.fsm_order_id.partner_id.zip">
+                                            <span t-field="o.fsm_order_id.partner_id.zip"/>
+                                        </span>
+                                        <span t-if="o.fsm_order_id.partner_id.city">
+                                            <span t-field="o.fsm_order_id.partner_id.city"/>
+                                        </span>
+                                        <span t-if="o.fsm_order_id.partner_id.state_id">
+                                            ,
+                                            <span t-field="o.fsm_order_id.partner_id.state_id.name"/>
+                                        </span>
+                                    </t>
+                                    <br t-if="o.fsm_order_id.partner_id.country_id"/>
+                                    <span t-if="o.fsm_order_id.partner_id.country_id">
+                                        <span t-field="o.fsm_order_id.partner_id.country_id.name"/>
+                                    </span>
+                                    <br/>
+                                    <t t-if="o.fsm_order_id.partner_id.phone">
+                                        <span t-field="o.fsm_order_id.partner_id.phone"/>
+                                        <span t-if="o.fsm_order_id.partner_id.mobile">
+                                            <br/>
+                                            <span t-field="o.fsm_order_id.partner_id.mobile"/>
+                                        </span>
+                                    </t>
+                                </div>
+                                <div class="col-6">
+                                    <strong>Fecha próxima revisión:</strong>
+                                    <span t-field="o.next_maintenance_date"
+                                          t-options='{"widget": "date"}'/>
+                                    <br/>
+                                    <strong>Importe:</strong>
+                                    <span t-field="o.fsm_order_amount_total"/>
+                                </div>
+                            </div>
+
+                            <!-- Equipment Table -->
+                            <div class="row mb-3" t-if="o.fsm_order_id and o.fsm_order_id.equipment_ids">
+                                <div class="col-12">
+                                    <h4>Equipos</h4>
+                                    <table class="table table-sm table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-left" style="width: 20%;">Nombre</th>
+                                                <th class="text-left" style="width: 30%;">Descripción</th>
+                                                <th class="text-left" style="width: 15%;">Nº Serie</th>
+                                                <th class="text-left" style="width: 20%;">Marca</th>
+                                                <th class="text-left" style="width: 15%;">Modelo</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="o.fsm_order_id.equipment_ids" t-as="equipment">
+                                                <tr>
+                                                    <td>
+                                                        <span t-field="equipment.name"/>
+                                                    </td>
+                                                    <td>
+                                                        <span t-field="equipment.equipment_brand"/>
+                                                    </td>
+                                                    <td>
+                                                        <span t-field="equipment.model"/>
+                                                    </td>
+                                                    <td>
+                                                        <span t-field="equipment.serial_no"/>
+                                                    </td>
+                                                    <td>
+                                                        <div t-field="equipment.note" style="font-size: 0.9em;"/>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
 
@@ -129,17 +210,17 @@
                                 <div t-field="o.observations"/>
                             </div>
                             <br/>
-                            <div class="row" style="page-break-inside: avoid;">
-                                <div class="col-6" t-if="o.next_maintenance_date">
-                                    <strong>Fecha próxima revisión:</strong>
-                                    <span t-field="o.next_maintenance_date"
-                                          t-options='{"widget": "date"}'/>
-                                </div>
-                                <div class="col-6" t-if="o.fsm_order_amount_total">
-                                    <strong>Importe:</strong>
-                                    <span t-field="o.fsm_order_amount_total"/>
-                                </div>
-                            </div>
+<!--                            <div class="row" style="page-break-inside: avoid;">-->
+<!--                                <div class="col-6" t-if="o.next_maintenance_date">-->
+<!--                                    <strong>Fecha próxima revisión:</strong>-->
+<!--                                    <span t-field="o.next_maintenance_date"-->
+<!--                                          t-options='{"widget": "date"}'/>-->
+<!--                                </div>-->
+<!--                                <div class="col-6" t-if="o.fsm_order_amount_total">-->
+<!--                                    <strong>Importe:</strong>-->
+<!--                                    <span t-field="o.fsm_order_amount_total"/>-->
+<!--                                </div>-->
+<!--                            </div>-->
                             <br/>
                             <div class="row" style="page-break-inside: avoid;">
                                 <div class="col-6" t-if="o.signature">
