@@ -27,12 +27,16 @@ class ResPartner(models.Model):
     def action_view_equipments(self):
         """Acción para mostrar los equipos del cliente"""
         self.ensure_one()
-        action = self.env.ref("maintenance.hr_equipment_action").read()[0]
-        action["domain"] = [("customer_id", "=", self.id)]
-        action["context"] = {
-            "default_customer_id": self.id,
+        return {
+            'name': 'Equipos',
+            'type': 'ir.actions.act_window',
+            'res_model': 'maintenance.equipment',
+            'view_mode': 'list,form',
+            'domain': [('customer_id', '=', self.id)],
+            'context': {
+                'default_customer_id': self.id,
+            },
         }
-        return action
 
     @api.model_create_multi
     def create(self, vals_list):

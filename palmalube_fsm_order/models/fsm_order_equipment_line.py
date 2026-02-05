@@ -104,16 +104,31 @@ class FSMOrderEquipmentLine(models.Model):
         ], limit=1)
 
         if not user_input:
-            user_input = self.env["survey.user_input"].sudo().create({
+            # Preparar valores para crear la encuesta
+            survey_vals = {
                 "survey_id": self.survey_id.id,
                 "partner_id": partner_id,
                 "fsm_order_id": self.fsm_order_id.id,
                 "fsm_order_equipment_line_id": self.id,
-            })
+            }
+
+            # Si el FSM Order ya tiene pedidos de venta, vincular al primero
+            if self.fsm_order_id.sale_order_ids:
+                survey_vals["sale_order_id"] = self.fsm_order_id.sale_order_ids[0].id
+
+            user_input = self.env["survey.user_input"].sudo().create(survey_vals)
         else:
-            # Si ya existe, actualizar el partner_id para que coincida con el usuario actual
+            # Si ya existe, actualizar el partner_id y sale_order_id si es necesario
+            update_vals = {}
             if user_input.partner_id.id != partner_id:
-                user_input.sudo().write({'partner_id': partner_id})
+                update_vals['partner_id'] = partner_id
+
+            # Si no tiene sale_order vinculado pero el FSM sí tiene, vincularlo
+            if not user_input.sale_order_id and self.fsm_order_id.sale_order_ids:
+                update_vals['sale_order_id'] = self.fsm_order_id.sale_order_ids[0].id
+
+            if update_vals:
+                user_input.sudo().write(update_vals)
 
         # Siempre asignar el user_input a la línea
         if self.survey_user_input_id != user_input:

@@ -30,6 +30,7 @@ class FSMOrder(models.Model):
     amount_total = fields.Monetary(
         string="Importe",
         compute="_compute_amount_total",
+        store=True,
         currency_field="company_currency_id",
     )
     company_currency_id = fields.Many2one(
@@ -89,10 +90,15 @@ class FSMOrder(models.Model):
             else:
                 order.next_maintenance_date = False
 
-    @api.depends('sale_order_ids.amount_total')
+    @api.depends('equipment_line_ids.equipment_id.maintenance_price')
     def _compute_amount_total(self):
+        """Suma los precios de mantenimiento de los equipos en las líneas."""
         for order in self:
-            order.amount_total = sum(order.sale_order_ids.mapped('amount_total'))
+            order.amount_total = sum(
+                line.equipment_id.maintenance_price
+                for line in order.equipment_line_ids
+                if line.equipment_id
+            )
 
     @api.depends('equipment_line_ids')
     def _compute_equipment_count(self):

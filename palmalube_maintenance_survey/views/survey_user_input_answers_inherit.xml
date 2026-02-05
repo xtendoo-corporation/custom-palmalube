@@ -3,26 +3,37 @@
     <record id="survey_user_input_answers_inherit" model="ir.ui.view">
         <field name="name">survey.user_input.view.form.inherit.hide_score</field>
         <field name="model">survey.user_input</field>
-        <field name="inherit_id" ref="survey.survey_user_input_view_form" />
+        <field name="inherit_id" ref="survey.survey_user_input_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='user_input_line_ids']/list/field[@name='answer_score']"
-                position="attributes">
+                   position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//field[@name='create_date']" position="after">
+                <field name="has_sale_order" invisible="1"/>
                 <field name="fsm_order_amount_total"/>
-                <field name="fsm_order_currency_id" invisible="1" />
+                <field name="fsm_order_currency_id" invisible="1"/>
                 <field name="next_maintenance_date"/>
-                <field name="observations" />
+                <field name="observations"/>
             </xpath>
             <xpath expr="//field[@name='access_token']" position="after">
-                <field name="signature" widget="image" />
-                <field name="signature_client" widget="image" />
+                <field name="signature" widget="image"/>
+                <field name="signature_client" widget="image"/>
             </xpath>
             <xpath expr="//button[@name='action_print_answers']" position="after">
-                <widget name="signature" string="Firmar Técnico" highlight="1" />
+                <widget name="signature" string="Firmar Técnico" highlight="1"/>
                 <widget name="signature" string="Firmar Cliente" highlight="1"
-                    signature_field="signature_client" />
+                        signature_field="signature_client"/>
+                <button name="action_create_sale_order"
+                        string="Crear Pedido"
+                        type="object"
+                        class="btn-success"
+                        invisible="has_sale_order"/>
+                <button name="action_view_sale_order"
+                        string="Ver Pedido"
+                        type="object"
+                        class="btn-primary"
+                        invisible="not has_sale_order"/>
             </xpath>
         </field>
     </record>
