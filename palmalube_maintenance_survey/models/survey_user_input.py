@@ -138,3 +138,29 @@ class SurveyUserInput(models.Model):
             'res_model': 'survey.user_input',
             'name': "Resultados de la Encuesta",
         }
+
+    def action_view_fsm_order(self):
+        """Acción para abrir la orden FSM relacionada con esta encuesta."""
+        self.ensure_one()
+
+        if not self.fsm_order_id:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': 'Sin Orden FSM',
+                    'message': 'Esta encuesta no está vinculada a ninguna orden FSM.',
+                    'type': 'warning',
+                    'sticky': False,
+                }
+            }
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Orden FSM',
+            'res_model': 'fsm.order',
+            'res_id': self.fsm_order_id.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }
+
