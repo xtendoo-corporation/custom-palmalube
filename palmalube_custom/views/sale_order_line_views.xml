@@ -6,6 +6,22 @@
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
+            <!-- Agregar botón con tick verde después del campo de cantidad -->
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_qty']" position="after">
+                <!-- Campos necesarios para la condición de visibilidad -->
+                <field name="qty_available_today" column_invisible="True"/>
+                <field name="display_qty_widget" column_invisible="True"/>
+
+                <button
+                    name="action_confirm_qty"
+                    type="object"
+                    icon="fa-check"
+                    class="btn btn-sm btn-success"
+                    title="Stock insuficiente - Click para actualizar el stock del producto"
+                    invisible="not display_qty_widget or qty_available_today &gt;= product_uom_qty"/>
+            </xpath>
+
+            <!-- Agregar campos personalizados al final -->
             <xpath expr="//field[@name='order_line']/list" position="inside">
                 <field name="equipo_ids" widget="many2many_tags"/>
                 <field name="intervencion"/>

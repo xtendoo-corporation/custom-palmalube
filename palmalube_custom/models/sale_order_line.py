@@ -120,3 +120,107 @@ class SaleOrderLine(models.Model):
                 discount = (base_price - pricelist_price) / base_price * 100
                 if (discount > 0 and base_price > 0) or (discount < 0 and base_price < 0):
                     line.discount = discount
+
+    def action_confirm_qty(self):
+        """
+        Actualiza la cantidad real (stock) del producto a la cantidad solicitada en la línea.
+        Ajusta el inventario en la ubicación del almacén correspondiente.
+        """
+        self.ensure_one()
+
+        if not self.product_id:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': 'Error',
+                    'message': 'No hay producto en esta línea.',
+                    'type': 'warning',
+                    'sticky': False,
+                }
+            }
+
+        if self.product_id.type not in ['product', 'consu']:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': 'Advertencia',
+                    'message': f'El producto {self.product_id.name} no es almacenable.',
+                    'type': 'warning',
+                    'sticky': False,
+                }
+            }
+
+        # Obtener el almacén y la ubicación de stock
+        warehouse = self.order_id.warehouse_id or self.env['stock.warehouse'].search([
+            ('company_id', '=', self.order_id.company_id.id)
+        ], limit=1)
+
+        if not warehouse:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': 'Error',
+                    'message': 'No se encontró un almacén para esta orden.',
+                    'type': 'danger',
+                    'sticky': False,
+                }
+            }
+
+        location = warehouse.lot_stock_id
+        qty_needed = self.product_uom_qty
+
+        # Obtener la cantidad actual en stock
+        quant = self.env['stock.quant'].search([
+            ('product_id', '=', self.product_id.id),
+            ('location_id', '=', location.id),
+        ], limit=1)
+
+        current_qty = quant.quantity if quant else 0.0
+
+        # Calcular la diferencia
+        qty_diff = qty_needed - current_qty
+
+        # Actualizar el inventario
+        self.env['stock.quant']._update_available_quantity(
+            self.product_id,
+            location,
+            qty_diff
+        )
+
+        # Commit para asegurar que el cambio de stock se persiste
+        self.env.cr.commit()
+
+        # Forzar recálculo de campos de stock en todas las líneas del pedido
+        if hasattr(self.order_id.order_line, '_compute_qty_at_date'):
+            self.order_id.order_line._compute_qty_at_date()
+
+        # Invalidar la caché para forzar recálculo de campos relacionados con stock
+        self.order_id.order_line.invalidate_recordset([
+            'qty_available_today',
+            'free_qty_today',
+            'virtual_available_at_date',
+            'forecast_expected_date',
+            'display_qty_widget'
+        ])
+
+        # Forzar recarga de la orden completa
+        self.order_id.invalidate_recordset()
+
+        # Retornar acción simple para recargar la vista
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'sale.order',
+            'res_id': self.order_id.id,
+            'view_mode': 'form',
+            'target': 'current',
+            'context': {
+                'notification': {
+                    'type': 'success',
+                    'title': 'Stock actualizado',
+                    'message': f'Stock de {self.product_id.name} actualizado de {current_qty:.2f} a {qty_needed:.2f} unidades.',
+                }
+            }
+        }
