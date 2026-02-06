@@ -1,7 +1,7 @@
 # Copyright 2025 Ivan Parrado, Manuel Calero, Xtendoo SLU
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import models, fields
+from odoo import models, fields, api, _
 
 
 class SaleOrder(models.Model):
@@ -29,4 +29,9 @@ class SaleOrder(models.Model):
                 bool(getattr(line, 'equipo_ids', False)) or bool(getattr(line, 'intervencion', False))
                 for line in order.order_line
             )
+
+    # Campo computado para contar FSM Orders relacionadas
+    # Nota: fsm_order_id ya está definido en xtendoo_fsm
+    # Nota: survey_count y survey_user_input_ids ya están definidos en palmalube_fsm_order
+    # Nota: Los métodos action_view_surveys y action_view_fsm_order ya están en palmalube_fsm_order
 

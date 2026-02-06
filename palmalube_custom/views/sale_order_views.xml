@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_sale_order_form_inherit_palmalube" model="ir.ui.view">
+            <field name="name">sale.order.form.inherit.palmalube</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <!-- Añadir los botones de FSM Order y Encuestas después del botón de facturas -->
+                <!-- Nota: El botón de Reparaciones ya está añadido por el módulo 'repair' -->
+                <xpath expr="//button[@name='action_view_invoice']" position="after">
+
+                    <!-- Botón para ver la orden FSM relacionada -->
+                    <button
+                        name="action_view_fsm_order"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-cogs"
+                        invisible="not fsm_order_id">
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_text">FSM Order</span>
+                        </div>
+                    </button>
+
+                    <!-- Botón para ver encuestas relacionadas -->
+                    <button
+                        name="action_view_surveys"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-file-text-o"
+                        invisible="survey_count == 0"
+                        groups="survey.group_survey_user">
+                        <field name="survey_count" widget="statinfo" string="Encuestas"/>
+                    </button>
+
+                </xpath>
+           </field>
+        </record>
+    </data>
+</odoo>

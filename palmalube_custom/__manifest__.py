@@ -14,6 +14,8 @@
         "contacts",
         "stock",
         "repair",
+        "xtendoo_fsm",  # Para el campo fsm_order_id
+        "palmalube_fsm_order",  # Para survey_count y métodos de encuestas
         "maintenance_equipment_partner",
         "hr_maintenance",
         "maintenance_request_employee",
@@ -27,6 +29,7 @@
         "report/saleorder_albaran_report.xml",
         "report/saleorder_albaran_action.xml",
         "views/account_payment_views.xml",
+        "views/sale_order_views.xml",
         "views/sale_order_line_views.xml",
         "views/account_move_line_views.xml",
         "report/invoice_report_inherit.xml",
