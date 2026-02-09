@@ -80,9 +80,9 @@
                                     <strong>Fecha próxima revisión:</strong>
                                     <span t-field="o.next_maintenance_date"
                                           t-options='{"widget": "date"}'/>
-                                    <br/>
-                                    <strong>Importe:</strong>
-                                    <span t-field="o.fsm_order_amount_total"/>
+<!--                                    <br/>-->
+<!--                                    <strong>Importe:</strong>-->
+<!--                                    <span t-field="o.fsm_order_amount_total"/>-->
                                 </div>
                             </div>
 
