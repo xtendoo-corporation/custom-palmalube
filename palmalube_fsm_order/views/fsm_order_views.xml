@@ -61,7 +61,7 @@
             </xpath>
 
             <xpath expr="//field[@name='description']" position="after">
-                <field name="amount_total" string="Importe de la venta"></field>
+                <field name="amount_total" string="Importe mantenimiento"></field>
             </xpath>
         </field>
     </record>
