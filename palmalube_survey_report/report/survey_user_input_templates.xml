@@ -94,8 +94,7 @@
                                     <table class="table table-sm table-bordered">
                                         <thead>
                                             <tr>
-                                                <th class="text-left" style="width: 20%;">Nombre</th>
-                                                <th class="text-left" style="width: 30%;">
+                                                <th class="text-left" style="width: 50%;">
                                                     Descripción
                                                 </th>
                                                 <th class="text-left" style="width: 15%;">Nº Serie</th>
@@ -109,10 +108,6 @@
                                                 <tr>
                                                     <td>
                                                         <span t-field="equipment.name" />
-                                                    </td>
-                                                    <td>
-                                                        <div t-field="equipment.note"
-                                                            style="font-size: 0.9em;" />
                                                     </td>
                                                     <td>
                                                         <span t-field="equipment.serial_no" />
@@ -168,16 +163,26 @@
                                                     respuesta' -->
 
 
-                                                    <td class="text-center">
+                                                   <td class="text-center">
                                                         <t
-                                                            t-if="line.display_name in ['SI', 'BIEN', 'FUNCIONAL']">
-                                                            <span t-field="line.display_name" />
+                                                            t-if="line.display_name in ['SI', 'BIEN', 'OPERATIVO']">
+                                                            <t t-if="line.display_name == 'BIEN'">
+                                                                <i class="fa fa-check text-success" />
+                                                            </t>
+                                                            <t t-else="">
+                                                                <span t-field="line.display_name" />
+                                                            </t>
                                                         </t>
                                                     </td>
                                                     <td class="text-center">
                                                         <t
-                                                            t-if="line.display_name in ['NO', 'MAL', 'NO FUNCIONAL']">
-                                                            <span t-field="line.display_name" />
+                                                            t-if="line.display_name in ['NO', 'MAL', 'NO OPERATIVO']">
+                                                            <t t-if="line.display_name == 'MAL'">
+                                                                <i class="fa fa-times text-danger" />
+                                                            </t>
+                                                            <t t-else="">
+                                                                <span t-field="line.display_name" />
+                                                            </t>
                                                         </t>
                                                     </td>
 
