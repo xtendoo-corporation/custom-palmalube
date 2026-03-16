@@ -7,7 +7,12 @@
             <t t-set="forced_vat" t-value="doc.fiscal_position_id.foreign_vat"/>
             <t t-set="address">
                 <div t-field="doc.partner_id"
-                     t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'/>
+                      t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True, "no_country": True}'/>
+                <t t-if="doc.partner_id.phone">
+                    <div>
+                       Teléfono: <span t-field="doc.partner_id.phone"/>
+                    </div>
+                </t>
                 <p t-if="doc.partner_id.vat">
                     <t t-if="doc.company_id.account_fiscal_country_id.vat_label"
                        t-out="doc.company_id.account_fiscal_country_id.vat_label"/>
@@ -28,11 +33,11 @@
                         </t>
                     </strong>
                     <div t-field="doc.partner_invoice_id"
-                         t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True, "phone_icons": True}'/>
+                         t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True, "phone_icons": True, "no_country": True}'/>
                     <t t-if="doc.partner_shipping_id != doc.partner_invoice_id">
                         <strong class="d-block mt-3">Dirección de Envío</strong>
                         <div t-field="doc.partner_shipping_id"
-                             t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True, "phone_icons": True}'/>
+                             t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True, "phone_icons": True, "no_country": True}'/>
                     </t>
                 </t>
             </t>
