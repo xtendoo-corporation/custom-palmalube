@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<title>Palmalube Partner Risk Control</title>
+<style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            color: #333333;
+            margin: 0;
+            padding: 24px;
+            background: #ffffff;
+        }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+        .hero {
+            text-align: center;
+            border: 1px solid #e5e5e5;
+            border-radius: 12px;
+            padding: 32px 24px;
+            margin-bottom: 24px;
+            background: #fafafa;
+        }
+        .hero img {
+            max-width: 160px;
+            margin-bottom: 16px;
+        }
+        .badges img {
+            margin: 0 4px;
+        }
+        .card {
+            border: 1px solid #e5e5e5;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        h1, h2 {
+            color: #4b3f72;
+        }
+        ul, ol {
+            line-height: 1.7;
+        }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="hero">
+        <img src="./logo.png" alt="Palmalube Partner Risk Control" />
+        <h1>Palmalube Partner Risk Control</h1>
+        <div class="badges">
+            <img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" />
+            <img alt="License: AGPL-3" src="https://img.shields.io/badge/licence-AGPL--3-blue.png" />
+        </div>
+        <p>Control de riesgo comercial para clientes con bloqueo automático por facturas vencidas impagadas.</p>
+    </div>
+
+    <div class="card">
+        <h2>Características</h2>
+        <ul>
+            <li>Booleano en clientes para activar o desactivar el bloqueo por impago.</li>
+            <li>Bloqueo en <strong>pedidos de venta</strong> con aviso en pantalla y validación en backend.</li>
+            <li>Bloqueo en <strong>solicitudes de mantenimiento</strong> con aviso en pantalla y validación en backend.</li>
+            <li>Bloqueo en <strong>facturas de cliente</strong> con aviso en pantalla y validación en backend.</li>
+            <li>Smart button en clientes para consultar facturas pendientes.</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h2>Uso</h2>
+        <ol>
+            <li>Ir a la ficha del cliente y revisar el campo de bloqueo por impago.</li>
+            <li>Crear un pedido de venta, solicitud de mantenimiento o factura de cliente.</li>
+            <li>Seleccionar el cliente.</li>
+            <li>Si el cliente tiene facturas vencidas pendientes de pago, el sistema lo limpiará y mostrará un aviso de bloqueo.</li>
+        </ol>
+    </div>
+
+    <div class="card">
+        <h2>Créditos</h2>
+        <p><strong>Autores:</strong> Daniel Domínguez (Xtendoo)</p>
+    </div>
+</div>
+</body>
+</html>
+

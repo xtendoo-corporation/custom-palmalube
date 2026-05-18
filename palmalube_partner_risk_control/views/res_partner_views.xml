@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_partner_form_risk_control" model="ir.ui.view">
+        <field name="name">res.partner.form.risk.control</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="priority">30</field>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button
+                    name="action_view_pending_customer_invoices"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-file-text-o"
+                    groups="account.group_account_invoice,account.group_account_readonly"
+                >
+                    <field
+                        name="pending_customer_invoice_count"
+                        widget="statinfo"
+                        string="Facturas pendientes"
+                    />
+                </button>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page name="commercial_risk" string="Riesgo comercial">
+                    <group>
+                        <field name="sale_block_on_overdue_invoice"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
+
