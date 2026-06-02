@@ -9,13 +9,13 @@
         <field name="inherit_id" ref="maintenance.hr_equipment_view_form"/>
         <field name="arch" type="xml">
             <!-- Añadir campos después de category_id y luego ocultar category_id -->
-            <xpath expr="//field[@name='name']" position="replace">
+            <xpath expr="//div[@class='oe_title']" position="replace">
+                 <field name="image_1920" widget="image" class="oe_avatar"
+                           options="{'preview_image': 'image_1920'}"/>
                 <div class="oe_title">
                     <h1>
                         <field name="name"/>
                     </h1>
-                    <field name="image_1920" widget="image" class="oe_avatar"
-                           options="{'preview_image': 'image_1920'}"/>
                 </div>
             </xpath>
             <xpath expr="//field[@name='category_id']" position="after">
