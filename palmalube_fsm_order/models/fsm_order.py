@@ -192,6 +192,20 @@ class FSMOrder(models.Model):
         print("[FSMOrder] action_create_sale_order called for FSM Order ID:", self.id)
         self.ensure_one()
 
+        # Buscar o crear el producto 'Mantenimiento' de tipo servicio
+        product_obj = self.env['product.product']
+        product_tmpl_obj = self.env['product.template']
+        mantenimiento_product = product_obj.search([('name', '=', 'Mantenimiento')], limit=1)
+        if not mantenimiento_product:
+            # Crear el template y el producto
+            product_tmpl = product_tmpl_obj.create({
+                'name': 'Mantenimiento',
+                'type': 'service',
+                'sale_ok': True,
+                'purchase_ok': False,
+            })
+            mantenimiento_product = product_tmpl.product_variant_id
+
         # Obtener el tipo de venta 'Reparación'
         type_id = self.env.ref('palmalube_sale_type.sale_order_type_reparacion', raise_if_not_found=False)
 
@@ -199,10 +213,21 @@ class FSMOrder(models.Model):
             'partner_id': self.partner_id.id,
             'fsm_order_id': self.id,  # Relaciona la orden de venta con el fsm.order
             'type_id': type_id.id if type_id else False,
+            'order_line': [
+                (0, 0, {
+                    'product_id': mantenimiento_product.id,
+                    'product_uom_qty': 1,
+                    'price_unit': self.amount_total,
+                    'name': 'Mantenimiento',
+                    'equipo_ids': [(6, 0, self.equipment_ids.ids)],
+                    'intervencion': self.description or '',
+                })
+            ],
         }
         print("[FSMOrder] Valores para crear sale.order:", sale_order_vals)
         sale_order = self.env['sale.order'].create(sale_order_vals)
         print("[FSMOrder] Sale Order creado con ID:", sale_order.id)
+        # Crear líneas de venta a partir de los movimientos de stock (si aplica, aquí solo la de mantenimiento)
         return {
             'type': 'ir.actions.act_window',
             'name': _('Orden de Venta'),
